@@ -52,6 +52,8 @@
     <Compile Include="FileTransferForm.Designer.cs">
       <DependentUpon>FileTransferForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="NetworkConnection.cs" />
+    <Compile Include="NetworkConnectionArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FileTransferForm.resx">

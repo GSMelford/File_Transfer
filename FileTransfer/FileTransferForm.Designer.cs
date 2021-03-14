@@ -48,7 +48,7 @@ namespace FileTransfer
             this.NameBox = new System.Windows.Forms.TextBox();
             this.LoginButton = new System.Windows.Forms.Button();
             this.NameUser = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.ServerStartButton = new System.Windows.Forms.Button();
             this.TopPanel.SuspendLayout();
             this.DragDropPanel.SuspendLayout();
             this.SuspendLayout();
@@ -197,6 +197,7 @@ namespace FileTransfer
             this.StatusBox.Multiline = true;
             this.StatusBox.Name = "StatusBox";
             this.StatusBox.ReadOnly = true;
+            this.StatusBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.StatusBox.Size = new System.Drawing.Size(414, 253);
             this.StatusBox.TabIndex = 6;
             // 
@@ -213,6 +214,7 @@ namespace FileTransfer
             this.DisconnectButton.TabIndex = 7;
             this.DisconnectButton.Text = "Відключитися";
             this.DisconnectButton.UseVisualStyleBackColor = false;
+            this.DisconnectButton.Click += new System.EventHandler(this.DisconnectButton_Click);
             // 
             // DragDropPanel
             // 
@@ -271,19 +273,20 @@ namespace FileTransfer
             this.NameUser.Text = "Ім\'я:";
             this.NameUser.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // button1
+            // ServerStartButton
             // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (64)))), ((int) (((byte) (64)))), ((int) (((byte) (64)))));
-            this.button1.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(576, 56);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(64, 25);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "Сервер";
-            this.button1.UseVisualStyleBackColor = false;
+            this.ServerStartButton.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (64)))), ((int) (((byte) (64)))), ((int) (((byte) (64)))));
+            this.ServerStartButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.ServerStartButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ServerStartButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
+            this.ServerStartButton.ForeColor = System.Drawing.Color.White;
+            this.ServerStartButton.Location = new System.Drawing.Point(576, 56);
+            this.ServerStartButton.Name = "ServerStartButton";
+            this.ServerStartButton.Size = new System.Drawing.Size(64, 25);
+            this.ServerStartButton.TabIndex = 13;
+            this.ServerStartButton.Text = "Сервер";
+            this.ServerStartButton.UseVisualStyleBackColor = false;
+            this.ServerStartButton.Click += new System.EventHandler(this.ServerStartButton_Click);
             // 
             // FileTransferForm
             // 
@@ -291,7 +294,7 @@ namespace FileTransfer
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DimGray;
             this.ClientSize = new System.Drawing.Size(656, 352);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.ServerStartButton);
             this.Controls.Add(this.NameUser);
             this.Controls.Add(this.LoginButton);
             this.Controls.Add(this.NameBox);
@@ -316,7 +319,7 @@ namespace FileTransfer
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ServerStartButton;
 
         private System.Windows.Forms.Label DragDropLabel;
 
