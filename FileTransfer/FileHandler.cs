@@ -19,5 +19,12 @@ namespace FileTransfer
         {
             FilePathsList = paths;
         }
+
+        public static void ClearFileList()
+        {
+            FilePathsList.Clear();
+        }
+        public static List<string> GetPaths() => FilePathsList;
+
     }
 }

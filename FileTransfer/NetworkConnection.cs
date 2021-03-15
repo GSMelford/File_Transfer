@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FileTransfer
 {
@@ -46,15 +51,71 @@ namespace FileTransfer
                 tcpClient = tcpListener.AcceptTcpClient();
                 Stream = tcpClient.GetStream();
                 //Получаем его имя
-                FriendName = GetMessage();
+                FriendName = ReceiveMessage();
                 Notify?.Invoke(null, new MyEventArgs(
                     $"До Вас приєднався користувач {FriendName}"));
+
+                Task rf = new Task(ReceiveFile);
+                rf.Start();
             }
             catch (Exception e)
             {
                 Notify?.Invoke(null,
                     new MyEventArgs($"Помилка під час прийнятя користувача.",
                         e.Message));
+            }
+        }
+
+        private static void ReceiveFile()
+        {
+            int counter = 0;
+            MessageBox.Show("ReceiveFile() started.");
+            while (true)
+            {
+                byte[] data = new byte[1000];
+                try
+                {
+                    do
+                    {
+                        Stream.Read(data, 0, data.Length);
+                        Notify?.Invoke(null, new MyEventArgs($"Файл отримується..."));
+                    
+                    } while (Stream.DataAvailable);
+                    File.WriteAllBytes($@"C:\{counter}.txt",data);
+                    Notify?.Invoke(null, new MyEventArgs($"Файл отримано."));
+                    counter++;
+                }
+                catch (Exception e)
+                {
+                    Notify?.Invoke(null, new MyEventArgs($"Помилка при отримані файлу.", e.Message));
+                    break;
+                }
+            }
+        }
+
+        public static void SendFiles()
+        {
+            try
+            {
+                foreach (var path in FileHandler.GetPaths())
+                {
+                    FileInfo fileInfo = new FileInfo(path);
+                    byte[] info = ObjectToByteArray(fileInfo);
+                    byte[] data = File.ReadAllBytes(path);
+                    byte[] total = info.Concat(data).ToArray();
+                    
+                    
+                    
+                    
+                    Stream.Write(total, 0, total.Length);
+                    Notify?.Invoke(null, new MyEventArgs($"Відправлено файл: {path}"));
+                }
+
+                FileHandler.ClearFileList();
+            }
+            catch (Exception e)
+            {
+                Notify?.Invoke(null, new MyEventArgs("Не вдалося відправити файл."));
             }
         }
         public static void ServerStop()
@@ -115,7 +176,7 @@ namespace FileTransfer
                                                      $"\"{message}\"", e.Message));
             }
         }
-        private static string GetMessage()
+        private static string ReceiveMessage()
         {
             byte[] data = new byte[64]; // Буфер для получаемых данных
             StringBuilder builder = new StringBuilder();
@@ -134,6 +195,15 @@ namespace FileTransfer
             }
 
             return builder.ToString();
+        }
+        public static byte[] ObjectToByteArray(Object obj)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
+            }
         }
     }
 }

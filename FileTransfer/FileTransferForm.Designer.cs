@@ -49,6 +49,8 @@ namespace FileTransfer
             this.LoginButton = new System.Windows.Forms.Button();
             this.NameUser = new System.Windows.Forms.Label();
             this.ServerStartButton = new System.Windows.Forms.Button();
+            this.SendButton = new System.Windows.Forms.Button();
+            this.ClearButton = new System.Windows.Forms.Button();
             this.TopPanel.SuspendLayout();
             this.DragDropPanel.SuspendLayout();
             this.SuspendLayout();
@@ -63,7 +65,7 @@ namespace FileTransfer
             this.TopPanel.Location = new System.Drawing.Point(0, 0);
             this.TopPanel.Margin = new System.Windows.Forms.Padding(0);
             this.TopPanel.Name = "TopPanel";
-            this.TopPanel.Size = new System.Drawing.Size(659, 32);
+            this.TopPanel.Size = new System.Drawing.Size(763, 32);
             this.TopPanel.TabIndex = 0;
             this.TopPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
             this.TopPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
@@ -77,7 +79,7 @@ namespace FileTransfer
             this.MaximizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.MaximizeButton.Font = new System.Drawing.Font("Open Sans", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
             this.MaximizeButton.ForeColor = System.Drawing.Color.White;
-            this.MaximizeButton.Location = new System.Drawing.Point(586, 0);
+            this.MaximizeButton.Location = new System.Drawing.Point(698, 0);
             this.MaximizeButton.Name = "MaximizeButton";
             this.MaximizeButton.Size = new System.Drawing.Size(32, 32);
             this.MaximizeButton.TabIndex = 4;
@@ -94,7 +96,7 @@ namespace FileTransfer
             this.MinimizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.MinimizeButton.Font = new System.Drawing.Font("Open Sans ExtraBold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
             this.MinimizeButton.ForeColor = System.Drawing.Color.White;
-            this.MinimizeButton.Location = new System.Drawing.Point(548, 0);
+            this.MinimizeButton.Location = new System.Drawing.Point(666, 0);
             this.MinimizeButton.Name = "MinimizeButton";
             this.MinimizeButton.Size = new System.Drawing.Size(32, 32);
             this.MinimizeButton.TabIndex = 3;
@@ -111,7 +113,7 @@ namespace FileTransfer
             this.ExitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ExitButton.Font = new System.Drawing.Font("Open Sans", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
             this.ExitButton.ForeColor = System.Drawing.Color.White;
-            this.ExitButton.Location = new System.Drawing.Point(624, 0);
+            this.ExitButton.Location = new System.Drawing.Point(730, 0);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(32, 32);
             this.ExitButton.TabIndex = 1;
@@ -194,12 +196,13 @@ namespace FileTransfer
             // StatusBox
             // 
             this.StatusBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.StatusBox.Font = new System.Drawing.Font("Open Sans SemiBold", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
             this.StatusBox.Location = new System.Drawing.Point(10, 87);
             this.StatusBox.Multiline = true;
             this.StatusBox.Name = "StatusBox";
             this.StatusBox.ReadOnly = true;
             this.StatusBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.StatusBox.Size = new System.Drawing.Size(414, 253);
+            this.StatusBox.Size = new System.Drawing.Size(520, 253);
             this.StatusBox.TabIndex = 6;
             // 
             // DisconnectButton
@@ -222,9 +225,9 @@ namespace FileTransfer
             this.DragDropPanel.AllowDrop = true;
             this.DragDropPanel.BackColor = System.Drawing.Color.Gray;
             this.DragDropPanel.Controls.Add(this.DragDropLabel);
-            this.DragDropPanel.Location = new System.Drawing.Point(430, 87);
+            this.DragDropPanel.Location = new System.Drawing.Point(536, 87);
             this.DragDropPanel.Name = "DragDropPanel";
-            this.DragDropPanel.Size = new System.Drawing.Size(214, 253);
+            this.DragDropPanel.Size = new System.Drawing.Size(214, 222);
             this.DragDropPanel.TabIndex = 9;
             this.DragDropPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropPanel_DragDrop);
             this.DragDropPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragDropPanel_DragEnter);
@@ -232,6 +235,7 @@ namespace FileTransfer
             // 
             // DragDropLabel
             // 
+            this.DragDropLabel.BackColor = System.Drawing.Color.Transparent;
             this.DragDropLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this.DragDropLabel.ForeColor = System.Drawing.Color.White;
             this.DragDropLabel.Location = new System.Drawing.Point(0, 0);
@@ -246,7 +250,7 @@ namespace FileTransfer
             this.NameBox.BackColor = System.Drawing.Color.White;
             this.NameBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.NameBox.Font = new System.Drawing.Font("Open Sans", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
-            this.NameBox.Location = new System.Drawing.Point(430, 56);
+            this.NameBox.Location = new System.Drawing.Point(536, 56);
             this.NameBox.MaxLength = 10;
             this.NameBox.Name = "NameBox";
             this.NameBox.Size = new System.Drawing.Size(71, 25);
@@ -260,7 +264,7 @@ namespace FileTransfer
             this.LoginButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.LoginButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
             this.LoginButton.ForeColor = System.Drawing.Color.White;
-            this.LoginButton.Location = new System.Drawing.Point(507, 56);
+            this.LoginButton.Location = new System.Drawing.Point(616, 56);
             this.LoginButton.Name = "LoginButton";
             this.LoginButton.Size = new System.Drawing.Size(64, 25);
             this.LoginButton.TabIndex = 11;
@@ -270,7 +274,7 @@ namespace FileTransfer
             // NameUser
             // 
             this.NameUser.ForeColor = System.Drawing.Color.White;
-            this.NameUser.Location = new System.Drawing.Point(430, 32);
+            this.NameUser.Location = new System.Drawing.Point(536, 32);
             this.NameUser.Name = "NameUser";
             this.NameUser.Size = new System.Drawing.Size(48, 24);
             this.NameUser.TabIndex = 12;
@@ -284,7 +288,7 @@ namespace FileTransfer
             this.ServerStartButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ServerStartButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
             this.ServerStartButton.ForeColor = System.Drawing.Color.White;
-            this.ServerStartButton.Location = new System.Drawing.Point(576, 56);
+            this.ServerStartButton.Location = new System.Drawing.Point(686, 56);
             this.ServerStartButton.Name = "ServerStartButton";
             this.ServerStartButton.Size = new System.Drawing.Size(64, 25);
             this.ServerStartButton.TabIndex = 13;
@@ -292,12 +296,43 @@ namespace FileTransfer
             this.ServerStartButton.UseVisualStyleBackColor = false;
             this.ServerStartButton.Click += new System.EventHandler(this.ServerStartButton_Click);
             // 
+            // SendButton
+            // 
+            this.SendButton.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (64)))), ((int) (((byte) (64)))), ((int) (((byte) (64)))));
+            this.SendButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.SendButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SendButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
+            this.SendButton.ForeColor = System.Drawing.Color.White;
+            this.SendButton.Location = new System.Drawing.Point(536, 315);
+            this.SendButton.Name = "SendButton";
+            this.SendButton.Size = new System.Drawing.Size(83, 25);
+            this.SendButton.TabIndex = 14;
+            this.SendButton.Text = "Відправити";
+            this.SendButton.UseVisualStyleBackColor = false;
+            this.SendButton.Click += new System.EventHandler(this.SendButton_Click);
+            // 
+            // ClearButton
+            // 
+            this.ClearButton.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (64)))), ((int) (((byte) (64)))), ((int) (((byte) (64)))));
+            this.ClearButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.ClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ClearButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (204)));
+            this.ClearButton.ForeColor = System.Drawing.Color.White;
+            this.ClearButton.Location = new System.Drawing.Point(666, 315);
+            this.ClearButton.Name = "ClearButton";
+            this.ClearButton.Size = new System.Drawing.Size(83, 25);
+            this.ClearButton.TabIndex = 15;
+            this.ClearButton.Text = "Отримати";
+            this.ClearButton.UseVisualStyleBackColor = false;
+            // 
             // FileTransferForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DimGray;
-            this.ClientSize = new System.Drawing.Size(656, 352);
+            this.ClientSize = new System.Drawing.Size(762, 352);
+            this.Controls.Add(this.ClearButton);
+            this.Controls.Add(this.SendButton);
             this.Controls.Add(this.ServerStartButton);
             this.Controls.Add(this.NameUser);
             this.Controls.Add(this.LoginButton);
@@ -322,6 +357,9 @@ namespace FileTransfer
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Button SendButton;
+        private System.Windows.Forms.Button ClearButton;
 
         private System.Windows.Forms.Button ServerStartButton;
 

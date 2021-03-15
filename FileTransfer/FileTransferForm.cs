@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FileTransfer
@@ -25,35 +26,6 @@ namespace FileTransfer
             Graphics g = DropPanel.CreateGraphics();
             g.DrawRectangle(pen,0,0,DropPanel.Width-1,DropLabel.Height-1 );
             
-        }
-
-        private void DropPanel_DragDrop(object sender, DragEventArgs e)
-        {
-            DropLabel.Text = "Кидай, я поймаю!";
-            List<string> paths = new List<string>();
-            foreach (var obj in (string[]) e.Data.GetData(DataFormats.FileDrop))
-            {
-                if(Directory.Exists(obj))
-                    paths.AddRange(Directory.GetFiles(obj,"*.*",SearchOption.AllDirectories));
-                else
-                    paths.Add(obj);
-                FilePathLabel.Text = string.Join("\r\n", paths);
-            }
-                
-        }
-
-        private void DropPanel_DragLeave(object sender, EventArgs e)
-        {
-            DropLabel.Text = "Кидай, я поймаю!";
-        }
-
-        private void DropPanel_DragEnter(object sender, DragEventArgs e)
-        {
-            if(e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                DropLabel.Text = "Кидай!";
-                e.Effect = DragDropEffects.Copy;
-            }
         }
 
         private void DropLabel_Click(object sender, EventArgs e)
@@ -80,7 +52,6 @@ namespace FileTransfer
             foreach (var path in paths)
                 AddStatus(path);
         }
-        //Управление формой
         private void MinimizeButton_Click(object sender, EventArgs e)
         {
             
@@ -117,7 +88,7 @@ namespace FileTransfer
         {
             _lastPoint = new Point(e.X, e.Y);
         }
-        private void ServerStartButton_Click(object sender, EventArgs e)
+        private async void ServerStartButton_Click(object sender, EventArgs e)
         {
             int port;
             if (int.TryParse(PortBox.Text, out port) || !string.IsNullOrEmpty(PortBox.Text))
@@ -138,7 +109,7 @@ namespace FileTransfer
             LoginButton.Enabled = false;
             ServerStartButton.Enabled = false;
             _isServer = true;
-            NetworkConnection.AcceptClient();
+            await Task.Run(() => { NetworkConnection.AcceptClient(); });
         }
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
@@ -205,13 +176,17 @@ namespace FileTransfer
         {
             if(e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                DragDropLabel.Text = "Кідай!";
+                DragDropLabel.Text = "Кидай!";
                 e.Effect = DragDropEffects.Copy;
             }
         }
         private void DragDropPanel_DragLeave(object sender, EventArgs e)
         {
             DragDropLabel.Text = "Кидай сюди, я піймаю!";
+        }
+        private void SendButton_Click(object sender, EventArgs e)
+        {
+            NetworkConnection.SendFiles();
         }
     }
 }
