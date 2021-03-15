@@ -145,6 +145,7 @@ namespace FileTransfer
             this.ConnectButton.TabIndex = 1;
             this.ConnectButton.Text = "Підключитися";
             this.ConnectButton.UseVisualStyleBackColor = false;
+            this.ConnectButton.Click += new System.EventHandler(this.ConnectButton_Click);
             // 
             // IPAdressBox
             // 
@@ -225,14 +226,17 @@ namespace FileTransfer
             this.DragDropPanel.Name = "DragDropPanel";
             this.DragDropPanel.Size = new System.Drawing.Size(214, 253);
             this.DragDropPanel.TabIndex = 9;
+            this.DragDropPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropPanel_DragDrop);
+            this.DragDropPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.DragDropPanel_DragEnter);
+            this.DragDropPanel.DragLeave += new System.EventHandler(this.DragDropPanel_DragLeave);
             // 
             // DragDropLabel
             // 
-            this.DragDropLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DragDropLabel.Dock = System.Windows.Forms.DockStyle.Top;
             this.DragDropLabel.ForeColor = System.Drawing.Color.White;
             this.DragDropLabel.Location = new System.Drawing.Point(0, 0);
             this.DragDropLabel.Name = "DragDropLabel";
-            this.DragDropLabel.Size = new System.Drawing.Size(214, 253);
+            this.DragDropLabel.Size = new System.Drawing.Size(214, 131);
             this.DragDropLabel.TabIndex = 0;
             this.DragDropLabel.Text = "Кидай сюди, я піймаю!";
             this.DragDropLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;

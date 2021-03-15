@@ -1,16 +1,16 @@
 namespace FileTransfer
 {
-    public class NetworkConnectionArgs
+    public class MyEventArgs
     {
         public string Message { get; }
         public string ExceptionMessage {get;}
         
-        public NetworkConnectionArgs(string message)
+        public MyEventArgs(string message)
         {
             Message = message;
             ExceptionMessage = "Операція пройшла успішно.";
         }
-        public NetworkConnectionArgs(string message, string exceptionMessage)
+        public MyEventArgs(string message, string exceptionMessage)
         {
             Message = message;
             ExceptionMessage = exceptionMessage;

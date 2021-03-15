@@ -1,26 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FileTransfer
 {
     public partial class FileTransferForm : Form
     {
-        private Point LastPoint;
-        private bool isServer;
+        private Point _lastPoint;
+        private bool _isServer;
         public FileTransferForm()
         {
             InitializeComponent();
             DisconnectButton.Enabled = false;
-            NetworkConnection.Notify += AddExceptionStatus;
+            NetworkConnection.Notify += AddStatus;
             IPAdressBox.Text =new WebClient().DownloadString("https://api.ipify.org");
         }
 
@@ -72,11 +67,19 @@ namespace FileTransfer
             }
         }*/
 
-        private void AddExceptionStatus(object sender, NetworkConnectionArgs e)
+        private void AddStatus(object sender, MyEventArgs e)
         {
             StatusBox.Text += $"[NetworkСonnection]: {e.Message}\r\n";
         }
-        private void AddStatus(string status){ StatusBox.Text = status;}
+        private void AddStatus(string message)
+        {
+            StatusBox.Text += $"{message}\r\n";
+        }
+        private void ShowFileList(List<string> paths)
+        {
+            foreach (var path in paths)
+                AddStatus(path);
+        }
         //Управление формой
         private void MinimizeButton_Click(object sender, EventArgs e)
         {
@@ -94,27 +97,27 @@ namespace FileTransfer
         {
             if (e.Button == MouseButtons.Left)
             {
-                this.Left += e.X - LastPoint.X;
-                this.Top += e.Y - LastPoint.Y;
+                this.Left += e.X - _lastPoint.X;
+                this.Top += e.Y - _lastPoint.Y;
             }
         }
         private void TopPanel_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                this.Left += e.X - LastPoint.X;
-                this.Top += e.Y - LastPoint.Y;
+                this.Left += e.X - _lastPoint.X;
+                this.Top += e.Y - _lastPoint.Y;
             }
         }
         private void TopPanel_MouseDown(object sender, MouseEventArgs e)
         {
-            LastPoint = new Point(e.X, e.Y);
+            _lastPoint = new Point(e.X, e.Y);
         }
         private void NameLabel_MouseDown(object sender, MouseEventArgs e)
         {
-            LastPoint = new Point(e.X, e.Y);
+            _lastPoint = new Point(e.X, e.Y);
         }
-        private async void ServerStartButton_Click(object sender, EventArgs e)
+        private void ServerStartButton_Click(object sender, EventArgs e)
         {
             int port;
             if (int.TryParse(PortBox.Text, out port) || !string.IsNullOrEmpty(PortBox.Text))
@@ -134,10 +137,9 @@ namespace FileTransfer
             DisconnectButton.Text = "Зупинити";
             LoginButton.Enabled = false;
             ServerStartButton.Enabled = false;
-            isServer = true;
-            await Task.Run(() => NetworkConnection.AcceptClient());
+            _isServer = true;
+            NetworkConnection.AcceptClient();
         }
-
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
             ConnectButton.Enabled = true;
@@ -145,12 +147,71 @@ namespace FileTransfer
             LoginButton.Enabled = true;
             ServerStartButton.Enabled = true;
             
-            if (isServer)
+            if (_isServer)
             {
                 NetworkConnection.ServerStop();
-                isServer = false;
+                _isServer = false;
                 DisconnectButton.Text = "Відключитися";
             }
+            else
+            {
+                NetworkConnection.DisconnectFromServer();
+                ConnectButton.Enabled = true;
+                DisconnectButton.Enabled = false;
+                LoginButton.Enabled = true;
+                ServerStartButton.Enabled = true;
+            }
+        }
+        private void ConnectButton_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(NameBox.Text))
+            {
+                MessageBox.Show("Поле \"Ім'я\" повине бути заповнене..\nВведіть значення у спеціальне вікно.",
+                    "Відсутнє ім'я користувача.",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                return;
+            }
+            
+            int port;
+            if (int.TryParse(PortBox.Text, out port) || !string.IsNullOrEmpty(PortBox.Text))
+            {
+                if(!NetworkConnection.ConnectToServer(IPAdressBox.Text,port))
+                    return;
+            }
+            else
+                return;
+            
+            ConnectButton.Enabled = false;
+            DisconnectButton.Enabled = true;
+            LoginButton.Enabled = false;
+            ServerStartButton.Enabled = false;
+            
+            NetworkConnection.SendMessage(NameBox.Text);
+        }
+        private void DragDropPanel_DragDrop(object sender, DragEventArgs e)
+        {
+            DragDropLabel.Text = "Кидай сюди, я піймаю!";
+            List<string> paths = new List<string>();
+            foreach (var obj in (string[]) e.Data.GetData(DataFormats.FileDrop))
+            {
+                if(Directory.Exists(obj))
+                    paths.AddRange(Directory.GetFiles(obj,"*.*",SearchOption.AllDirectories));
+                else
+                    paths.Add(obj);
+            }
+            FileHandler.AddPaths(paths);
+            ShowFileList(paths);
+        }
+        private void DragDropPanel_DragEnter(object sender, DragEventArgs e)
+        {
+            if(e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                DragDropLabel.Text = "Кідай!";
+                e.Effect = DragDropEffects.Copy;
+            }
+        }
+        private void DragDropPanel_DragLeave(object sender, EventArgs e)
+        {
+            DragDropLabel.Text = "Кидай сюди, я піймаю!";
         }
     }
 }
