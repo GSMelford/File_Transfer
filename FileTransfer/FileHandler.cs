@@ -15,7 +15,12 @@ namespace FileTransfer
             get => _downloadPath;
             set { _downloadPath = value; }
         }
-
+        private static List<string> FilePaths = new List<string>();
+        public static void AddFilePath(string path)
+        {
+            FilePaths.Add(path);
+        }
+        public static List<string> GetFilePaths() => FilePaths;
         public static void WriteFile(byte[] file, string fileName)
         {
             using (FileStream fileStream = new FileStream($@"{_downloadPath}\{fileName}",FileMode.Append))
