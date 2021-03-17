@@ -43,7 +43,7 @@ namespace FileTransfer
             this.ServerButton = new System.Windows.Forms.Button();
             this.SendList = new System.Windows.Forms.CheckedListBox();
             this.DownloadPathBox = new System.Windows.Forms.RichTextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.DownloadPathLabel = new System.Windows.Forms.Label();
             this.SendButton = new System.Windows.Forms.Button();
             this.RemoveButton = new System.Windows.Forms.Button();
             this.ClearButton = new System.Windows.Forms.Button();
@@ -52,6 +52,8 @@ namespace FileTransfer
             this.ReceiveList = new System.Windows.Forms.CheckedListBox();
             this.ChooseDownloadButton = new System.Windows.Forms.Button();
             this.AddFileButton = new System.Windows.Forms.Button();
+            this.EventLabel = new System.Windows.Forms.Label();
+            this.EventStatusLabel = new System.Windows.Forms.Label();
             this.TopPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -190,6 +192,7 @@ namespace FileTransfer
             this.ServerButton.TabIndex = 13;
             this.ServerButton.Text = "Отримувач";
             this.ServerButton.UseVisualStyleBackColor = false;
+            this.ServerButton.Click += new System.EventHandler(this.ServerButton_Click);
             // 
             // SendList
             // 
@@ -208,16 +211,16 @@ namespace FileTransfer
             this.DownloadPathBox.TabIndex = 15;
             this.DownloadPathBox.Text = "";
             // 
-            // label1
+            // DownloadPathLabel
             // 
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(12, 273);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(172, 24);
-            this.label1.TabIndex = 16;
-            this.label1.Text = "Шлях для завантажень:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.DownloadPathLabel.BackColor = System.Drawing.Color.Transparent;
+            this.DownloadPathLabel.ForeColor = System.Drawing.Color.White;
+            this.DownloadPathLabel.Location = new System.Drawing.Point(12, 273);
+            this.DownloadPathLabel.Name = "DownloadPathLabel";
+            this.DownloadPathLabel.Size = new System.Drawing.Size(172, 24);
+            this.DownloadPathLabel.TabIndex = 16;
+            this.DownloadPathLabel.Text = "Шлях для завантажень:";
+            this.DownloadPathLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // SendButton
             // 
@@ -320,12 +323,36 @@ namespace FileTransfer
             this.AddFileButton.Text = "Додати файл";
             this.AddFileButton.UseVisualStyleBackColor = false;
             // 
+            // EventLabel
+            // 
+            this.EventLabel.BackColor = System.Drawing.Color.Transparent;
+            this.EventLabel.ForeColor = System.Drawing.Color.White;
+            this.EventLabel.Location = new System.Drawing.Point(263, 273);
+            this.EventLabel.Name = "EventLabel";
+            this.EventLabel.Size = new System.Drawing.Size(54, 24);
+            this.EventLabel.TabIndex = 25;
+            this.EventLabel.Text = "Подія:";
+            this.EventLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // EventStatusLabel
+            // 
+            this.EventStatusLabel.BackColor = System.Drawing.Color.Transparent;
+            this.EventStatusLabel.ForeColor = System.Drawing.Color.White;
+            this.EventStatusLabel.Location = new System.Drawing.Point(308, 273);
+            this.EventStatusLabel.Name = "EventStatusLabel";
+            this.EventStatusLabel.Size = new System.Drawing.Size(184, 24);
+            this.EventStatusLabel.TabIndex = 26;
+            this.EventStatusLabel.Text = "Відсутня.";
+            this.EventStatusLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
             // FileTransferForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DimGray;
             this.ClientSize = new System.Drawing.Size(519, 338);
+            this.Controls.Add(this.EventStatusLabel);
+            this.Controls.Add(this.EventLabel);
             this.Controls.Add(this.AddFileButton);
             this.Controls.Add(this.ChooseDownloadButton);
             this.Controls.Add(this.ReceiveList);
@@ -334,7 +361,7 @@ namespace FileTransfer
             this.Controls.Add(this.ClearButton);
             this.Controls.Add(this.RemoveButton);
             this.Controls.Add(this.SendButton);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.DownloadPathLabel);
             this.Controls.Add(this.DownloadPathBox);
             this.Controls.Add(this.SendList);
             this.Controls.Add(this.ServerButton);
@@ -382,7 +409,7 @@ namespace FileTransfer
 
         private CheckedListBox SendList;
         private RichTextBox DownloadPathBox;
-        private Label label1;
+        private Label DownloadPathLabel;
         private Button SendButton;
         private Button RemoveButton;
         private Button ClearButton;
@@ -391,6 +418,8 @@ namespace FileTransfer
         private CheckedListBox ReceiveList;
         private Button ChooseDownloadButton;
         private Button AddFileButton;
+        private Label EventLabel;
+        private Label EventStatusLabel;
     }
 }
 
