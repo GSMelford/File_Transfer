@@ -67,8 +67,10 @@ namespace FileTransfer
             this.TopPanel.Location = new System.Drawing.Point(0, 0);
             this.TopPanel.Margin = new System.Windows.Forms.Padding(0);
             this.TopPanel.Name = "TopPanel";
-            this.TopPanel.Size = new System.Drawing.Size(763, 32);
+            this.TopPanel.Size = new System.Drawing.Size(519, 32);
             this.TopPanel.TabIndex = 0;
+            this.TopPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseDown);
+            this.TopPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.TopPanel_MouseMove);
             // 
             // MaximizeButton
             // 
@@ -79,7 +81,7 @@ namespace FileTransfer
             this.MaximizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.MaximizeButton.Font = new System.Drawing.Font("Open Sans", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.MaximizeButton.ForeColor = System.Drawing.Color.White;
-            this.MaximizeButton.Location = new System.Drawing.Point(437, 0);
+            this.MaximizeButton.Location = new System.Drawing.Point(449, 0);
             this.MaximizeButton.Name = "MaximizeButton";
             this.MaximizeButton.Size = new System.Drawing.Size(32, 32);
             this.MaximizeButton.TabIndex = 4;
@@ -95,7 +97,7 @@ namespace FileTransfer
             this.MinimizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.MinimizeButton.Font = new System.Drawing.Font("Open Sans ExtraBold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.MinimizeButton.ForeColor = System.Drawing.Color.White;
-            this.MinimizeButton.Location = new System.Drawing.Point(399, 1);
+            this.MinimizeButton.Location = new System.Drawing.Point(411, 1);
             this.MinimizeButton.Name = "MinimizeButton";
             this.MinimizeButton.Size = new System.Drawing.Size(32, 32);
             this.MinimizeButton.TabIndex = 3;
@@ -111,12 +113,13 @@ namespace FileTransfer
             this.ExitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ExitButton.Font = new System.Drawing.Font("Open Sans", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ExitButton.ForeColor = System.Drawing.Color.White;
-            this.ExitButton.Location = new System.Drawing.Point(475, 0);
+            this.ExitButton.Location = new System.Drawing.Point(487, 1);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(32, 32);
             this.ExitButton.TabIndex = 1;
             this.ExitButton.Text = "X";
             this.ExitButton.UseVisualStyleBackColor = false;
+            this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
             // NameLabel
             // 
@@ -142,6 +145,7 @@ namespace FileTransfer
             this.ClientButton.TabIndex = 1;
             this.ClientButton.Text = "Відправник";
             this.ClientButton.UseVisualStyleBackColor = false;
+            this.ClientButton.Click += new System.EventHandler(this.ClientButton_Click);
             // 
             // PortLabel
             // 
