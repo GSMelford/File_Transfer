@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -70,31 +71,83 @@ namespace FileTransfer
         {
             while (true)
             {
-                int bytes = 0;
-                byte[] buffer = new byte[64];
-                StringBuilder json = new StringBuilder();
-
-                do
+                try
                 {
-                    bytes = Stream.Read(buffer, 0, buffer.Length);
-                    json.Append(Encoding.UTF8.GetString(buffer, 0, bytes));
+                    int bytes = 0;
+                    byte[] buffer = new byte[64];
+                    StringBuilder json = new StringBuilder();
+
+                    do
+                    {
+                        bytes = Stream.Read(buffer, 0, buffer.Length);
+                        json.Append(Encoding.UTF8.GetString(buffer, 0, bytes));
+                    }
+                    while (Stream.DataAvailable);
+
+                    FileTransfer.FileInfo fileInfo = JsonSerializer.Deserialize<FileTransfer.FileInfo>(json.ToString());
+
+                    int bufferSize = 10000; // Скорость отправки
+
+                    for (int i = 0; i < fileInfo.Length; i += bufferSize)
+                    {
+                        if (fileInfo.Length - i - bufferSize < 0)
+                            bufferSize = (int)fileInfo.Length - i;
+                        buffer = new byte[bufferSize];
+
+                        Stream.Read(buffer, 0, buffer.Length);
+
+                        FileHandler.WriteFile(buffer, fileInfo.Name);
+                    }
                 }
-                while (Stream.DataAvailable);
-
-                FileTransfer.FileInfo fileInfo = JsonSerializer.Deserialize<FileTransfer.FileInfo>(json.ToString());
-
-                int bufferSize = 10000; // Скорость отправки
-
-                for (int i = 0; i < fileInfo.Length; i+= bufferSize)
+                catch (Exception)
                 {
-                    if (fileInfo.Length - i - bufferSize < 0)
-                        bufferSize = fileInfo.Length - i;
-                    buffer = new byte[bufferSize];
 
-                    Stream.Read(buffer, 0, buffer.Length);
-
-
+                    throw;
                 }
+            }
+        }
+        private static void SendFiles()
+        {
+            try
+            {
+                foreach (var path in FileHandler.GetFilePaths())
+                {
+                    byte[] buffer;
+                    System.IO.FileInfo file = new System.IO.FileInfo(path);
+                    FileTransfer.FileInfo fileInfo = new FileTransfer.FileInfo() 
+                    { 
+                        Name = file.Name,
+                        Extension = file.Extension,
+                        Length = file.Length
+                    };
+
+                    string json = JsonSerializer.Serialize<FileTransfer.FileInfo>(fileInfo);
+                    buffer = Encoding.UTF8.GetBytes(json);
+                    Stream.Write(buffer, 0, buffer.Length);
+
+                    int bufferSize = 10000; //Скорость получения
+
+                    //Надо будет когда-то вынести в поток.
+                    using (FileStream fileStream = File.OpenRead(path))
+                    {
+
+                        for (int i = 0; i < fileStream.Length; i += bufferSize)
+                        {
+                            if (fileStream.Length - i - bufferSize < 0)
+                                bufferSize = (int)fileStream.Length - i;
+
+                            buffer = new byte[bufferSize];
+                            fileStream.Read(buffer, 0, buffer.Length);
+                            Stream.Write(buffer, 0, buffer.Length);
+                        }
+
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }
