@@ -31,7 +31,6 @@ namespace FileTransfer
                     EventStatusLabel.Text = "Клієнт приєднався.";
             });
         }
-
         private async void ClientButton_Click(object sender, EventArgs e)
         {
             int port;
@@ -53,8 +52,25 @@ namespace FileTransfer
                 }
             });
         }
-
-
+        private void AddFileButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog file = new OpenFileDialog();
+            file.Title = "Виберіть файл:";
+            file.InitialDirectory = @"C:\";
+            if (file.ShowDialog() == DialogResult.OK)
+            {
+                FileHandler.AddFilePath(file.FileName);
+            }
+        }
+        private void SendButton_Click(object sender, EventArgs e)
+        {
+            foreach (var path in FileHandler.GetFilePaths())
+            {
+                EventStatusLabel.Text = "Відправка файлу...";
+                NetworkConnection.SendFiles(path);
+                EventStatusLabel.Text = "Файл відправлено.";
+            }
+        }
 
 
 

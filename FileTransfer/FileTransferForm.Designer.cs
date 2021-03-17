@@ -239,6 +239,7 @@ namespace FileTransfer
             this.SendButton.TabIndex = 17;
             this.SendButton.Text = "Відправити";
             this.SendButton.UseVisualStyleBackColor = false;
+            this.SendButton.Click += new System.EventHandler(this.SendButton_Click);
             // 
             // RemoveButton
             // 
@@ -326,6 +327,7 @@ namespace FileTransfer
             this.AddFileButton.TabIndex = 24;
             this.AddFileButton.Text = "Додати файл";
             this.AddFileButton.UseVisualStyleBackColor = false;
+            this.AddFileButton.Click += new System.EventHandler(this.AddFileButton_Click);
             // 
             // EventLabel
             // 

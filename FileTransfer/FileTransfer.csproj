@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileHandler.cs" />
     <Compile Include="FileInfo.cs" />
     <Compile Include="FileTransferForm.cs">
       <SubType>Form</SubType>
