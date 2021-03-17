@@ -1,15 +1,21 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FileTransfer
 {
     class NetworkConnection
     {
+        public delegate void NetworkConnectionHandler(string message);
+        public static event NetworkConnectionHandler Notify;
+        public static event NetworkConnectionHandler ReceiveNotify;
         private static string IP;
         private static string IPServer = "178.150.32.105";
         private static int Port;
@@ -40,7 +46,8 @@ namespace FileTransfer
             {
                 Client = Listener.AcceptTcpClient();
                 Stream = Client.GetStream();
-
+                Client.ReceiveBufferSize = 1000000;
+                Client.SendBufferSize = 1000000;
                 //Запуск потока для получения файлов
                 Task receiveFiles = new Task(ReceiveFiles);
                 receiveFiles.Start();
@@ -86,68 +93,69 @@ namespace FileTransfer
 
                     FileTransfer.FileInfo fileInfo = JsonSerializer.Deserialize<FileTransfer.FileInfo>(json.ToString());
 
-                    int bufferSize = 10000; // Скорость отправки
 
+                    int bufferSize = 1000000; // Скорость получения
+                    
                     for (int i = 0; i < fileInfo.Length; i += bufferSize)
                     {
                         if (fileInfo.Length - i - bufferSize < 0)
-                            bufferSize = (int)fileInfo.Length - i;
+                            bufferSize = (int)(fileInfo.Length - i);
                         buffer = new byte[bufferSize];
+                        if (Client.Available >= bufferSize)
+                        {
+                            Stream.Read(buffer, 0, buffer.Length);
 
-                        Stream.Read(buffer, 0, buffer.Length);
-
-                        FileHandler.WriteFile(buffer, fileInfo.Name);
+                            FileHandler.WriteFile(buffer, fileInfo.Name);
+                        }
+                        else
+                            i -= bufferSize;
                     }
+                    Notify?.Invoke($"Отримано файл: {fileInfo.Name}.");
+                    ReceiveNotify.Invoke(fileInfo.Name);
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
             }
         }
-        private static void SendFiles()
+        public static void SendFiles(string path)
         {
             try
             {
-                foreach (var path in FileHandler.GetFilePaths())
+                byte[] buffer;
+                System.IO.FileInfo file = new System.IO.FileInfo(path);
+                FileTransfer.FileInfo fileInfo = new FileTransfer.FileInfo()
                 {
-                    byte[] buffer;
-                    System.IO.FileInfo file = new System.IO.FileInfo(path);
-                    FileTransfer.FileInfo fileInfo = new FileTransfer.FileInfo() 
-                    { 
-                        Name = file.Name,
-                        Extension = file.Extension,
-                        Length = file.Length
-                    };
+                    Name = file.Name,
+                    Extension = file.Extension,
+                    Length = file.Length
+                };
 
-                    string json = JsonSerializer.Serialize<FileTransfer.FileInfo>(fileInfo);
-                    buffer = Encoding.UTF8.GetBytes(json);
-                    Stream.Write(buffer, 0, buffer.Length);
+                string json = JsonSerializer.Serialize<FileTransfer.FileInfo>(fileInfo);
+                buffer = Encoding.UTF8.GetBytes(json);
+                Stream.Write(buffer, 0, buffer.Length);
+                
+                int bufferSize = 1000000; //Скорость отправки
+                Thread.Sleep(30);
 
-                    int bufferSize = 10000; //Скорость получения
-
-                    //Надо будет когда-то вынести в поток.
-                    using (FileStream fileStream = File.OpenRead(path))
+                using (FileStream fileStream = File.OpenRead(path))
+                {
+                    for (int i = 0; i < fileStream.Length; i += bufferSize)
                     {
+                        if (fileStream.Length - i - bufferSize < 0)
+                            bufferSize = (int)fileStream.Length - i;
 
-                        for (int i = 0; i < fileStream.Length; i += bufferSize)
-                        {
-                            if (fileStream.Length - i - bufferSize < 0)
-                                bufferSize = (int)fileStream.Length - i;
-
-                            buffer = new byte[bufferSize];
-                            fileStream.Read(buffer, 0, buffer.Length);
-                            Stream.Write(buffer, 0, buffer.Length);
-                        }
-
+                        buffer = new byte[bufferSize];
+                        fileStream.Read(buffer, 0, buffer.Length);
+                        Stream.Write(buffer, 0, buffer.Length);
                     }
+
                 }
             }
             catch (Exception)
             {
 
-                throw;
             }
         }
     }
