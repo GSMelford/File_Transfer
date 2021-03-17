@@ -85,6 +85,7 @@
   <ItemGroup>
     <Compile Include="FileHandler.cs" />
     <Compile Include="FileInfo.cs" />
+    <Compile Include="FileTransferEventArgs.cs" />
     <Compile Include="FileTransferForm.cs">
       <SubType>Form</SubType>
     </Compile>

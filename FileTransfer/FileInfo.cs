@@ -9,7 +9,7 @@ namespace FileTransfer
     class FileInfo
     {
         public string Name { get; set; }
-        public string Expansion { get; set; }
-        public int Length { get; set; }
+        public string Extension { get; set; }
+        public long Length { get; set; }
     }
 }
