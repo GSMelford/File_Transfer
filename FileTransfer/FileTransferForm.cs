@@ -11,7 +11,10 @@ namespace FileTransfer
         public FileTransferForm()
         {
             InitializeComponent();
+
             PortBox.Text = "1234";
+            FileHandler.DowloadPath = @"C:\";
+            DownloadPathBox.Text = FileHandler.DowloadPath;
         }
 
         private async void ServerButton_Click(object sender, EventArgs e)
