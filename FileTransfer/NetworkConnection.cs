@@ -14,8 +14,11 @@ namespace FileTransfer
     class NetworkConnection
     {
         public delegate void NetworkConnectionHandler(string message);
+        public delegate void DownloadHandler(long max, long value);
         public static event NetworkConnectionHandler Notify;
         public static event NetworkConnectionHandler ReceiveNotify;
+        public static event NetworkConnectionHandler DownloadedNotify;
+        public static event DownloadHandler Downloaded;
         private static string IP;
         private static string IPServer = "178.150.32.105";
         private static int Port;
@@ -80,6 +83,8 @@ namespace FileTransfer
             {
                 try
                 {
+                    //Получем информацию о файле
+
                     int bytes = 0;
                     byte[] buffer = new byte[64];
                     StringBuilder json = new StringBuilder();
@@ -93,23 +98,53 @@ namespace FileTransfer
 
                     FileTransfer.FileInfo fileInfo = JsonSerializer.Deserialize<FileTransfer.FileInfo>(json.ToString());
 
+                    //------------------------------------
 
-                    int bufferSize = 1000000; // Скорость получения
+                    //Запускаем поток счета скорости
                     
+                    long receiveByte = 0;
+                    double v = 0;
+                    Task speedTest = new Task(() =>
+                    {
+                        long oldReceiveByte = 0;
+                        while (true)
+                        {
+                            Thread.Sleep(1000);
+                            v = receiveByte - oldReceiveByte;
+                            oldReceiveByte = receiveByte;
+                            if (receiveByte == fileInfo.Length)
+                                break;
+                        }
+                    });
+                    speedTest.Start();
+
+                    //------------------------------------
+
+                    //Получем сам файл
+
+                    int bufferSize;
                     for (int i = 0; i < fileInfo.Length; i += bufferSize)
                     {
+                        bufferSize = Client.Available;
+
                         if (fileInfo.Length - i - bufferSize < 0)
                             bufferSize = (int)(fileInfo.Length - i);
-                        buffer = new byte[bufferSize];
-                        if (Client.Available >= bufferSize)
-                        {
-                            Stream.Read(buffer, 0, buffer.Length);
-
-                            FileHandler.WriteFile(buffer, fileInfo.Name);
-                        }
                         else
-                            i -= bufferSize;
+
+                        buffer = new byte[bufferSize];
+
+                        Stream.Read(buffer, 0, buffer.Length);
+
+                        FileHandler.WriteFile(buffer, fileInfo.Name);
+                        receiveByte += bufferSize;
+                        Downloaded?.Invoke(fileInfo.Length, receiveByte);
+                        DownloadedNotify?.Invoke($"Назва файлу: {fileInfo.Name} " +
+                            $"Завантажено: {receiveByte} байтів з {fileInfo.Length} байтів. " +
+                            $"Швидкість: {v / 1000000} Мб/с. ({(receiveByte * 100) / fileInfo.Length} %)");
                     }
+
+                    //------------------------------------
+
                     Notify?.Invoke($"Отримано файл: {fileInfo.Name}.");
                     ReceiveNotify.Invoke(fileInfo.Name);
                 }
