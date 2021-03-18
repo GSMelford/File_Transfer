@@ -10,6 +10,7 @@ namespace FileTransfer
         public delegate void FileTransferFormHandler(string message);
         private event FileTransferFormHandler Notify;
         Point _lastPoint;
+        private bool LoadBarEnabled = false;
         public FileTransferForm()
         {
             InitializeComponent();
@@ -17,6 +18,8 @@ namespace FileTransfer
             Notify += AddStatus;
             NetworkConnection.Notify += AddStatus;
             NetworkConnection.ReceiveNotify += AddFileToReceiveList;
+            NetworkConnection.Downloaded += UpdateLoadBar;
+            NetworkConnection.DownloadedNotify += UpdateLoadStatus;
 
             PortBox.Text = "1234";
             FileHandler.DowloadPath = @"C:\";
@@ -116,6 +119,35 @@ namespace FileTransfer
             Invoke((Action)(() =>
             {
                 StatusBox.Text += message + "\r\n";
+                StatusBox.SelectionStart = StatusBox.Text.Length;
+                StatusBox.ScrollToCaret();
+            }));
+        }
+        private void UpdateLoadBar(long size, long value)
+        {
+            Invoke((Action)(() =>
+            {
+                if(!LoadBarEnabled)
+                {
+                    LoadBar.Maximum = (int)size;
+                    LoadBarEnabled = true;
+                }
+
+                LoadBar.Value = (int)value;
+
+                if (LoadBar.Maximum == LoadBar.Value)
+                {
+                    LoadBar.Value = 0;
+                    LoadBarEnabled = false;
+                }
+                    
+            }));
+        }
+        private void UpdateLoadStatus(string status)
+        {
+            Invoke((Action)(() =>
+            {
+                LoadBarLabel.Text = status;
             }));
         }
         private void AddFileToReceiveList(string fileName)

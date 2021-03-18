@@ -343,7 +343,6 @@ namespace FileTransfer
             this.LoadBarLabel.Name = "LoadBarLabel";
             this.LoadBarLabel.Size = new System.Drawing.Size(878, 24);
             this.LoadBarLabel.TabIndex = 29;
-            this.LoadBarLabel.Text = "Ім\'я файлу. (Байтів з байтів)";
             this.LoadBarLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label2
