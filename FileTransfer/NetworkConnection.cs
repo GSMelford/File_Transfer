@@ -14,27 +14,24 @@ namespace FileTransfer
     class NetworkConnection
     {
         public delegate void NetworkConnectionHandler(string message);
-        public delegate void DownloadHandler(long max, long value);
+        public delegate void DownloadOrLoadHandler(long max, long value);
+        public delegate void DownloadOrLoadStatisticsHandler(NetworkConnectionArgs e);
+        public static event DownloadOrLoadStatisticsHandler DownloadOrLoadStatistics;
         public static event NetworkConnectionHandler Notify;
-        public static event NetworkConnectionHandler ReceiveNotify;
-        public static event NetworkConnectionHandler DownloadedNotify;
-        public static event DownloadHandler Downloaded;
-        private static string IP;
-        private static string IPServer = "178.150.32.105";
+        public static event NetworkConnectionHandler ReceiveOrSendNotify;
+        public static event DownloadOrLoadHandler DownloadOrLoad;
+
+        private static string IPServer;
         private static int Port;
         private static TcpListener Listener;
         private static TcpClient Client;
         private static NetworkStream Stream;
 
-        private NetworkConnection()
-        {
-            IP = new WebClient().DownloadString("https://api.ipify.org");
-        }
-        public static bool StartServer()
+        public static bool StartServer(int port)
         {
             try
             {
-                Listener = new TcpListener(IPAddress.Any, 1234);
+                Listener = new TcpListener(IPAddress.Any, port);
                 Listener.Start();
                 return true;
             }
@@ -62,13 +59,14 @@ namespace FileTransfer
                 return false;
             }
         }
-        public static bool ConnectToServer(int  port)
+        public static bool ConnectToServer(string IP, int  port)
         {
             try
             {
+                IPServer = IP;
                 Port = port;
                 Client = new TcpClient();
-                Client.Connect(IPServer, Port);
+                Client.Connect(IP, Port);
                 Stream = Client.GetStream();
                 return true;
             }
@@ -77,12 +75,21 @@ namespace FileTransfer
                 return false;
             }
         }
+        public static void Disconnect()
+        {
+            Listener?.Stop();
+            Client?.Close();
+            Stream?.Close();
+        }
         private static void ReceiveFiles()
         {
+            Stopwatch watch = new Stopwatch();
             while (true)
             {
                 try
                 {
+                    
+                    
                     //Получем информацию о файле
 
                     int bytes = 0;
@@ -119,7 +126,7 @@ namespace FileTransfer
                     speedTest.Start();
 
                     //------------------------------------
-
+                    watch.Start();
                     //Получем сам файл
 
                     int bufferSize;
@@ -137,16 +144,16 @@ namespace FileTransfer
 
                         FileHandler.WriteFile(buffer, fileInfo.Name);
                         receiveByte += bufferSize;
-                        Downloaded?.Invoke(fileInfo.Length, receiveByte);
-                        DownloadedNotify?.Invoke($"Назва файлу: {fileInfo.Name} " +
-                            $"Завантажено: {receiveByte} байтів з {fileInfo.Length} байтів. " +
-                            $"Швидкість: {v / 1000000} Мб/с. ({(receiveByte * 100) / fileInfo.Length} %)");
+                        DownloadOrLoad?.Invoke(fileInfo.Length, receiveByte);
+                        DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
+                            fileInfo.Length, v, receiveByte, watch.Elapsed));
                     }
 
                     //------------------------------------
-
+                    watch.Stop();
+                    watch.Reset();
                     Notify?.Invoke($"Отримано файл: {fileInfo.Name}.");
-                    ReceiveNotify.Invoke(fileInfo.Name);
+                    ReceiveOrSendNotify.Invoke(fileInfo.Name);
                 }
                 catch (Exception)
                 {
@@ -158,7 +165,13 @@ namespace FileTransfer
         {
             try
             {
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+
                 byte[] buffer;
+                //Отправляем информацию о файле
+
+
                 System.IO.FileInfo file = new System.IO.FileInfo(path);
                 FileTransfer.FileInfo fileInfo = new FileTransfer.FileInfo()
                 {
@@ -171,22 +184,63 @@ namespace FileTransfer
                 buffer = Encoding.UTF8.GetBytes(json);
                 Stream.Write(buffer, 0, buffer.Length);
                 
-                int bufferSize = 1000000; //Скорость отправки
-                Thread.Sleep(30);
+                //---------------------------
 
-                using (FileStream fileStream = File.OpenRead(path))
+
+                int bufferSize = 1000000; //Скорость буфера для отправки
+
+                while (true) // Задержка 
                 {
-                    for (int i = 0; i < fileStream.Length; i += bufferSize)
-                    {
-                        if (fileStream.Length - i - bufferSize < 0)
-                            bufferSize = (int)fileStream.Length - i;
-
-                        buffer = new byte[bufferSize];
-                        fileStream.Read(buffer, 0, buffer.Length);
-                        Stream.Write(buffer, 0, buffer.Length);
-                    }
-
+                    Thread.Sleep(1000);
+                    if (Client.Available == 0)
+                        break;
                 }
+
+                //Запускаем поток счета скорости
+
+                long sendByte = 0;
+                double v = 0;
+                Task speedTest = new Task(() =>
+                {
+                    long oldsendByte = 0;
+                    while (true)
+                    {
+                        Thread.Sleep(1000);
+                        v = sendByte - oldsendByte;
+                        oldsendByte = sendByte;
+                        if (sendByte == fileInfo.Length)
+                            break;
+                    }
+                });
+                speedTest.Start();
+
+                //------------------------------------
+
+
+                FileHandler._fileStream = File.OpenRead(path);
+
+                for (int i = 0; i < FileHandler._fileStream.Length; i += bufferSize)
+                {
+                    if (FileHandler._fileStream.Length - i - bufferSize < 0)
+                        bufferSize = (int)FileHandler._fileStream.Length - i;
+
+                    buffer = new byte[bufferSize];
+                    buffer = FileHandler.ReadFile(bufferSize);
+                    Stream.Write(buffer, 0, buffer.Length);
+                    sendByte += bufferSize;
+
+                    DownloadOrLoad?.Invoke(fileInfo.Length, sendByte);
+                    DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
+                        fileInfo.Length, v, sendByte, watch.Elapsed));
+                }
+
+                FileHandler._fileStream.Dispose();
+                FileHandler._fileStream.Close();
+
+                Notify?.Invoke($"Відправлено файл: {fileInfo.Name}.");
+                ReceiveOrSendNotify?.Invoke(fileInfo.Name);
+                watch.Reset();
+                watch.Stop();
             }
             catch (Exception)
             {

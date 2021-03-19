@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -9,83 +10,32 @@ namespace FileTransfer
     {
         public delegate void FileTransferFormHandler(string message);
         private event FileTransferFormHandler Notify;
-        Point _lastPoint;
         private bool LoadBarEnabled = false;
+        private bool isServer = false;
         public FileTransferForm()
         {
             InitializeComponent();
 
             Notify += AddStatus;
             NetworkConnection.Notify += AddStatus;
-            NetworkConnection.ReceiveNotify += AddFileToReceiveList;
-            NetworkConnection.Downloaded += UpdateLoadBar;
-            NetworkConnection.DownloadedNotify += UpdateLoadStatus;
+            NetworkConnection.ReceiveOrSendNotify += UpdateReceiveOrSendList;
+            NetworkConnection.DownloadOrLoad += UpdateLoadBar;
+            NetworkConnection.DownloadOrLoadStatistics += UpdateLoadStatus;
 
-            PortBox.Text = "1234";
             FileHandler.DowloadPath = @"C:\";
-            SetButtonsEnabled(true, true, false, false, false, false, false);
-
+            DownloadPathBox.Text = FileHandler.DowloadPath;
+            SetButtonsEnabled(false, false, false, false);
 
         }
 
-        private void SetButtonsEnabled(bool serverButton, bool clientButton, bool disconnectButton,
-            bool sendButton, bool addFileButton, bool removeButton, bool clearButton)
+        private void SetButtonsEnabled (bool sendButton, bool addFileButton, bool removeButton, bool clearButton)
         {
-            ServerButton.Enabled = serverButton;
-            ClientButton.Enabled = clientButton;
-            DisconnectButton.Enabled = disconnectButton;
             SendButton.Enabled = sendButton;
             AddFileButton.Enabled = addFileButton;
             RemoveButton.Enabled = removeButton;
             ClearButton.Enabled = clearButton;
         }
 
-        private async void ServerButton_Click(object sender, EventArgs e)
-        {
-            SetButtonsEnabled(false, false, false, false, false, false, false);
-
-            if (!NetworkConnection.StartServer())
-            {
-                Notify?.Invoke("Помилка при створені серверу.");
-                SetButtonsEnabled(true, true, false, false, false, false, false);
-            }
-            else
-                Notify?.Invoke("Сервер успішно створено.");
-
-            await Task.Run(()=> 
-            {
-                Notify?.Invoke("Очікування користувача...");
-                if (!NetworkConnection.AcceptClient())
-                {
-                    Notify?.Invoke("Збій в очікувані користувача.");
-                    SetButtonsEnabled(true, true, false, false, false, false, false);
-                }
-                else
-                    Notify?.Invoke("Користувач підключився.");
-            });
-        }
-        private async void ClientButton_Click(object sender, EventArgs e)
-        {
-            int port;
-            if (!int.TryParse(PortBox.Text, out port))
-            {
-                MessageBox.Show("Невірний порт.");
-                return;
-            }
-            Notify?.Invoke("Підключення до серверу...");
-            SetButtonsEnabled(false, false, false, false, true, true, true);
-            await Task.Run(()=> 
-            {
-                if (!NetworkConnection.ConnectToServer(port))
-                {
-                    Notify?.Invoke("Збій при підключені до серверу.");
-                    return;
-                }
-                else
-                    Notify?.Invoke("Підключення пройшло успішно.");
-            });
-            SetButtonsEnabled(true, true, false, true, true, true, true);
-        }
         private void AddFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
@@ -93,7 +43,8 @@ namespace FileTransfer
             file.InitialDirectory = @"C:\";
             if (file.ShowDialog() == DialogResult.OK)
             {
-                FileHandler.AddFilePath(file.FileName);
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.FileName);
+                FileHandler.AddFilePath(fileInfo.Name, file.FileName);
                 AddFileToList(file.FileName);
             }
         }
@@ -109,16 +60,18 @@ namespace FileTransfer
             {
                 foreach (var path in FileHandler.GetFilePaths())
                 {
-                    NetworkConnection.SendFiles(path);
+                    NetworkConnection.SendFiles(path.Value);
                 }
+                FileHandler.GetFilePaths().Clear();
             });
             SendButton.Enabled = true;
         }
         public void AddStatus(string message)
         {
+            DateTime time = DateTime.Now;
             Invoke((Action)(() =>
             {
-                StatusBox.Text += message + "\r\n";
+                StatusBox.Text += $"[{time.ToLongTimeString()}] " + message + "\r\n";
                 StatusBox.SelectionStart = StatusBox.Text.Length;
                 StatusBox.ScrollToCaret();
             }));
@@ -129,45 +82,120 @@ namespace FileTransfer
             {
                 if(!LoadBarEnabled)
                 {
-                    LoadBar.Maximum = (int)size;
+                    LoadProgressBar.Maximum = (int)size;
                     LoadBarEnabled = true;
                 }
 
-                LoadBar.Value = (int)value;
+                LoadProgressBar.Value = (int)value;
 
-                if (LoadBar.Maximum == LoadBar.Value)
+                if (LoadProgressBar.Maximum == LoadProgressBar.Value)
                 {
-                    LoadBar.Value = 0;
+                    LoadProgressBar.Value = 0;
                     LoadBarEnabled = false;
                 }
                     
             }));
         }
-        private void UpdateLoadStatus(string status)
+        private void UpdateLoadStatus(NetworkConnectionArgs e)
         {
             Invoke((Action)(() =>
             {
-                LoadBarLabel.Text = status;
+                FileNameStatus.Text = $"File Name: {e.FileName}";
+                LoadInPercent.Text = $"{e.СurrentLength * 100 / e.FileLength} %";
+                SpeedStatus.Text = String.Format("{0:f2} Mb/s",e.Speed/1000000);
+                ByteStatus.Text = String.Format("{0}Mb/{1}Mb",(e.СurrentLength/1000000),(e.FileLength/1000000));
+                TimeLoadStatus.Text = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                        e.Time.Hours, e.Time.Minutes, e.Time.Seconds,
+                        e.Time.Milliseconds / 10);
             }));
         }
-        private void AddFileToReceiveList(string fileName)
+        private void UpdateReceiveOrSendList(string fileName)
         {
-            ReceiveList.Items.Add(fileName, true);
-        }
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-        private void TopPanel_MouseDown(object sender, MouseEventArgs e)
-        {
-            _lastPoint = new Point(e.X, e.Y);
-        }
-        private void TopPanel_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
+            Invoke((Action)(() =>
             {
-                this.Left += e.X - _lastPoint.X;
-                this.Top += e.Y - _lastPoint.Y;
+                if (isServer)
+                    ReceiveList.Items.Add(fileName, true);
+                else
+                    SendList.Items.Remove(fileName);
+            }));
+        }
+        private void DownloadPathBox_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                FileHandler.DowloadPath = folderBrowser.SelectedPath;
+                DownloadPathBox.Text = folderBrowser.SelectedPath;
+            }
+        }
+
+
+
+        private async void Host_Click(object sender, EventArgs e)
+        {
+            ServerForm serverForm = new ServerForm();
+            serverForm.ShowDialog(this);
+            if (!serverForm.Start)
+                return;
+
+            if (!NetworkConnection.StartServer(serverForm.Port))
+            {
+                Notify?.Invoke("An error occurred while creating the server.");
+                return;
+            }
+            else
+                Notify?.Invoke("The server was successfully created.");
+
+            await Task.Run(() =>
+            {
+                Notify?.Invoke("Waiting for user ...");
+                if (!NetworkConnection.AcceptClient())
+                {
+                    Notify?.Invoke("Failed to wait for user.");
+                    return;
+                }
+                else
+                    Notify?.Invoke("The user has connected.");
+            });
+            isServer = true;
+            serverForm.Dispose();
+        }
+        private async void ConnectToServer_Click(object sender, EventArgs e)
+        {
+            ClientForm clientForm = new ClientForm();
+            clientForm.ShowDialog(this);
+            if (!clientForm.Start)
+                return;
+
+            Notify?.Invoke("Connecting to Server ...");
+            SetButtonsEnabled(false, true, true, true);
+            await Task.Run(() =>
+            {
+                if (!NetworkConnection.ConnectToServer(clientForm.IP,clientForm.Port))
+                {
+                    Notify?.Invoke("Failed to connect to server.");
+                    SetButtonsEnabled(false, false, false, false);
+                    return;
+                }
+                else
+                    Notify?.Invoke("The connection was successful.");
+            });
+            SetButtonsEnabled(true, true, true, true);
+        }
+        private void Disconnect_Click(object sender, EventArgs e)
+        {
+            NetworkConnection.Disconnect();
+            if(isServer)
+                Notify?.Invoke("Server disabled.");
+            else
+                Notify?.Invoke("The connection to the server was interrupted.");
+        }
+        private void RemoveButton_Click(object sender, EventArgs e)
+        {
+            foreach (var item in SendList.CheckedItems.OfType<string>().ToList())
+            {
+                SendList.Items.Remove(item);
+                FileHandler.GetFilePaths().Remove(item);
             }
         }
     }

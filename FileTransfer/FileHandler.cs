@@ -15,18 +15,26 @@ namespace FileTransfer
             get => _downloadPath;
             set { _downloadPath = value; }
         }
-        private static List<string> FilePaths = new List<string>();
-        public static void AddFilePath(string path)
+        public static FileStream _fileStream;
+        //private static List<string> FilePaths = new List<string>();
+        public static Dictionary<string, string> FilePaths = new Dictionary<string, string>();
+        public static void AddFilePath(string name,string path)
         {
-            FilePaths.Add(path);
+            FilePaths.Add(name,path);
         }
-        public static List<string> GetFilePaths() => FilePaths;
+        public static Dictionary<string, string> GetFilePaths() => FilePaths;
         public static void WriteFile(byte[] file, string fileName)
         {
             using (FileStream fileStream = new FileStream($@"{_downloadPath}\{fileName}",FileMode.Append))
             {
                 fileStream.Write(file, 0, file.Length);
             }
+        }
+        public static byte[] ReadFile(int bufferSize)
+        {
+            byte[] buffer = new byte[bufferSize];
+            _fileStream.Read(buffer, 0, buffer.Length);
+            return buffer;
         }
     }
 }
