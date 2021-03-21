@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -10,7 +9,6 @@ namespace FileTransfer
     {
         public delegate void FileTransferFormHandler(string message);
         private event FileTransferFormHandler Notify;
-        private bool LoadBarEnabled = false;
         private bool isServer = false;
         public FileTransferForm()
         {
@@ -22,12 +20,11 @@ namespace FileTransfer
             NetworkConnection.DownloadOrLoad += UpdateLoadBar;
             NetworkConnection.DownloadOrLoadStatistics += UpdateLoadStatus;
 
-            FileHandler.DowloadPath = @"C:\";
+            FileHandler.DowloadPath = @"C:\Users\Max\Desktop\R\";
             DownloadPathBox.Text = FileHandler.DowloadPath;
             SetButtonsEnabled(false, false, false, false);
 
         }
-
         private void SetButtonsEnabled (bool sendButton, bool addFileButton, bool removeButton, bool clearButton)
         {
             SendButton.Enabled = sendButton;
@@ -35,17 +32,20 @@ namespace FileTransfer
             RemoveButton.Enabled = removeButton;
             ClearButton.Enabled = clearButton;
         }
-
         private void AddFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
+            file.Multiselect = true;
             file.Title = "Виберіть файл:";
-            file.InitialDirectory = @"C:\";
+            file.InitialDirectory = @"C:\Users\Max\Desktop\S\";
             if (file.ShowDialog() == DialogResult.OK)
             {
-                System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.FileName);
-                FileHandler.AddFilePath(fileInfo.Name, file.FileName);
-                AddFileToList(file.FileName);
+                foreach (var path in file.FileNames)
+                {
+                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(path);
+                    FileHandler.AddFilePath(fileInfo.Name, path);
+                    AddFileToList(path);
+                }
             }
         }
         private void AddFileToList(string path)
@@ -80,20 +80,7 @@ namespace FileTransfer
         {
             Invoke((Action)(() =>
             {
-                if(!LoadBarEnabled)
-                {
-                    LoadProgressBar.Maximum = (int)size;
-                    LoadBarEnabled = true;
-                }
-
-                LoadProgressBar.Value = (int)value;
-
-                if (LoadProgressBar.Maximum == LoadProgressBar.Value)
-                {
-                    LoadProgressBar.Value = 0;
-                    LoadBarEnabled = false;
-                }
-                    
+                LoadProgressBar.Value = (int)(value*100/ size);
             }));
         }
         private void UpdateLoadStatus(NetworkConnectionArgs e)
@@ -128,9 +115,6 @@ namespace FileTransfer
                 DownloadPathBox.Text = folderBrowser.SelectedPath;
             }
         }
-
-
-
         private async void Host_Click(object sender, EventArgs e)
         {
             ServerForm serverForm = new ServerForm();
@@ -197,6 +181,10 @@ namespace FileTransfer
                 SendList.Items.Remove(item);
                 FileHandler.GetFilePaths().Remove(item);
             }
+        }
+        private void ClearButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

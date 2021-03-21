@@ -67,7 +67,7 @@ namespace FileTransfer
             this.SendList.Location = new System.Drawing.Point(12, 91);
             this.SendList.Name = "SendList";
             this.SendList.ScrollAlwaysVisible = true;
-            this.SendList.Size = new System.Drawing.Size(255, 264);
+            this.SendList.Size = new System.Drawing.Size(255, 259);
             this.SendList.TabIndex = 14;
             // 
             // SendButton
@@ -77,7 +77,7 @@ namespace FileTransfer
             this.SendButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
             this.SendButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Gray;
             this.SendButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SendButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SendButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.SendButton.ForeColor = System.Drawing.Color.White;
             this.SendButton.Location = new System.Drawing.Point(187, 64);
             this.SendButton.Name = "SendButton";
@@ -94,7 +94,7 @@ namespace FileTransfer
             this.RemoveButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
             this.RemoveButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Gray;
             this.RemoveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.RemoveButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.RemoveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.RemoveButton.ForeColor = System.Drawing.Color.White;
             this.RemoveButton.Location = new System.Drawing.Point(101, 361);
             this.RemoveButton.Name = "RemoveButton";
@@ -111,7 +111,7 @@ namespace FileTransfer
             this.ClearButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
             this.ClearButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Gray;
             this.ClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ClearButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.ClearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ClearButton.ForeColor = System.Drawing.Color.White;
             this.ClearButton.Location = new System.Drawing.Point(187, 361);
             this.ClearButton.Name = "ClearButton";
@@ -119,6 +119,7 @@ namespace FileTransfer
             this.ClearButton.TabIndex = 19;
             this.ClearButton.Text = "Clear";
             this.ClearButton.UseVisualStyleBackColor = false;
+            this.ClearButton.Click += new System.EventHandler(this.ClearButton_Click);
             // 
             // SendListLabel
             // 
@@ -148,7 +149,7 @@ namespace FileTransfer
             this.ReceiveList.Location = new System.Drawing.Point(287, 91);
             this.ReceiveList.Name = "ReceiveList";
             this.ReceiveList.ScrollAlwaysVisible = true;
-            this.ReceiveList.Size = new System.Drawing.Size(255, 264);
+            this.ReceiveList.Size = new System.Drawing.Size(255, 259);
             this.ReceiveList.TabIndex = 22;
             // 
             // AddFileButton
@@ -158,7 +159,7 @@ namespace FileTransfer
             this.AddFileButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
             this.AddFileButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Gray;
             this.AddFileButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.AddFileButton.Font = new System.Drawing.Font("Open Sans SemiBold", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.AddFileButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.AddFileButton.ForeColor = System.Drawing.Color.White;
             this.AddFileButton.Location = new System.Drawing.Point(15, 361);
             this.AddFileButton.Name = "AddFileButton";
@@ -170,10 +171,10 @@ namespace FileTransfer
             // 
             // StatusBox
             // 
-            this.StatusBox.Font = new System.Drawing.Font("Open Sans SemiBold", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.StatusBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.StatusBox.Location = new System.Drawing.Point(15, 416);
             this.StatusBox.Name = "StatusBox";
-            this.StatusBox.Size = new System.Drawing.Size(527, 73);
+            this.StatusBox.Size = new System.Drawing.Size(527, 293);
             this.StatusBox.TabIndex = 27;
             this.StatusBox.Text = "";
             // 
@@ -207,7 +208,7 @@ namespace FileTransfer
             this.SpeedStatus,
             this.ByteStatus,
             this.TimeLoadStatus});
-            this.StatusStrip.Location = new System.Drawing.Point(0, 497);
+            this.StatusStrip.Location = new System.Drawing.Point(0, 712);
             this.StatusStrip.Name = "StatusStrip";
             this.StatusStrip.ShowItemToolTips = true;
             this.StatusStrip.Size = new System.Drawing.Size(554, 27);
@@ -227,7 +228,7 @@ namespace FileTransfer
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.LoadInPercent.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
-            this.LoadInPercent.Font = new System.Drawing.Font("Open Sans SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.LoadInPercent.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.LoadInPercent.ForeColor = System.Drawing.Color.Black;
             this.LoadInPercent.Name = "LoadInPercent";
             this.LoadInPercent.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -242,7 +243,7 @@ namespace FileTransfer
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.SpeedStatus.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
-            this.SpeedStatus.Font = new System.Drawing.Font("Open Sans SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SpeedStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.SpeedStatus.Name = "SpeedStatus";
             this.SpeedStatus.Size = new System.Drawing.Size(72, 22);
             this.SpeedStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -255,7 +256,7 @@ namespace FileTransfer
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.ByteStatus.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
-            this.ByteStatus.Font = new System.Drawing.Font("Open Sans SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.ByteStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.ByteStatus.Name = "ByteStatus";
             this.ByteStatus.Size = new System.Drawing.Size(132, 22);
             this.ByteStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -268,7 +269,7 @@ namespace FileTransfer
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right) 
             | System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom)));
             this.TimeLoadStatus.BorderStyle = System.Windows.Forms.Border3DStyle.Sunken;
-            this.TimeLoadStatus.Font = new System.Drawing.Font("Open Sans SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.TimeLoadStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.TimeLoadStatus.Name = "TimeLoadStatus";
             this.TimeLoadStatus.Size = new System.Drawing.Size(100, 22);
             // 
@@ -296,21 +297,21 @@ namespace FileTransfer
             // Host
             // 
             this.Host.Name = "Host";
-            this.Host.Size = new System.Drawing.Size(180, 22);
+            this.Host.Size = new System.Drawing.Size(167, 22);
             this.Host.Text = "Host";
             this.Host.Click += new System.EventHandler(this.Host_Click);
             // 
             // ConnectToServer
             // 
             this.ConnectToServer.Name = "ConnectToServer";
-            this.ConnectToServer.Size = new System.Drawing.Size(180, 22);
+            this.ConnectToServer.Size = new System.Drawing.Size(167, 22);
             this.ConnectToServer.Text = "Connect to server";
             this.ConnectToServer.Click += new System.EventHandler(this.ConnectToServer_Click);
             // 
             // Disconnect
             // 
             this.Disconnect.Name = "Disconnect";
-            this.Disconnect.Size = new System.Drawing.Size(180, 22);
+            this.Disconnect.Size = new System.Drawing.Size(167, 22);
             this.Disconnect.Text = "Disconnect";
             this.Disconnect.Click += new System.EventHandler(this.Disconnect_Click);
             // 
@@ -332,7 +333,7 @@ namespace FileTransfer
             // 
             this.DownloadPathBox.Location = new System.Drawing.Point(142, 36);
             this.DownloadPathBox.Name = "DownloadPathBox";
-            this.DownloadPathBox.Size = new System.Drawing.Size(400, 25);
+            this.DownloadPathBox.Size = new System.Drawing.Size(400, 22);
             this.DownloadPathBox.TabIndex = 32;
             this.DownloadPathBox.Click += new System.EventHandler(this.DownloadPathBox_Click);
             // 
@@ -348,10 +349,10 @@ namespace FileTransfer
             // 
             // FileTransferForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(554, 524);
+            this.ClientSize = new System.Drawing.Size(554, 739);
             this.Controls.Add(this.FileNameStatus);
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.MenuStrip);
@@ -367,7 +368,7 @@ namespace FileTransfer
             this.Controls.Add(this.ClearButton);
             this.Controls.Add(this.SendListLabel);
             this.Controls.Add(this.SendList);
-            this.Font = new System.Drawing.Font("Open Sans SemiBold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.MenuStrip;
             this.Margin = new System.Windows.Forms.Padding(4);

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FileTransfer
@@ -16,7 +13,7 @@ namespace FileTransfer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FileTransferForm());
+            Application.Run(new MainForm());
         }
     }
 }

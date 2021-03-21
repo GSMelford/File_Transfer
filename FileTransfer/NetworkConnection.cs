@@ -3,11 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace FileTransfer
 {
@@ -66,7 +64,7 @@ namespace FileTransfer
                 IPServer = IP;
                 Port = port;
                 Client = new TcpClient();
-                Client.Connect(IP, Port);
+                Client.Connect(IPServer, Port);
                 Stream = Client.GetStream();
                 return true;
             }
@@ -88,75 +86,67 @@ namespace FileTransfer
             {
                 try
                 {
-                    
-                    
-                    //Получем информацию о файле
+                    //Передаем информацию о файле, который сейчас будет передавать
+                    byte[] buffer = new byte[4];
+                    Stream.Read(buffer, 0, buffer.Length);
 
-                    int bytes = 0;
-                    byte[] buffer = new byte[64];
-                    StringBuilder json = new StringBuilder();
-
-                    do
-                    {
-                        bytes = Stream.Read(buffer, 0, buffer.Length);
-                        json.Append(Encoding.UTF8.GetString(buffer, 0, bytes));
-                    }
-                    while (Stream.DataAvailable);
-
-                    FileTransfer.FileInfo fileInfo = JsonSerializer.Deserialize<FileTransfer.FileInfo>(json.ToString());
-
-                    //------------------------------------
-
-                    //Запускаем поток счета скорости
-                    
-                    long receiveByte = 0;
-                    double v = 0;
-                    Task speedTest = new Task(() =>
-                    {
-                        long oldReceiveByte = 0;
-                        while (true)
-                        {
-                            Thread.Sleep(1000);
-                            v = receiveByte - oldReceiveByte;
-                            oldReceiveByte = receiveByte;
-                            if (receiveByte == fileInfo.Length)
-                                break;
-                        }
-                    });
-                    speedTest.Start();
-
-                    //------------------------------------
+                    //Запускаем счет времени
                     watch.Start();
-                    //Получем сам файл
+                    //----------------------
 
-                    int bufferSize;
-                    for (int i = 0; i < fileInfo.Length; i += bufferSize)
+                    buffer = new byte[BitConverter.ToInt32(buffer, 0)];
+                    Stream.Read(buffer, 0, buffer.Length);
+                    FileInfo fileInfo = (FileInfo)ByteArrayToObject(buffer);
+                    Notify?.Invoke($"Waiting for file: {fileInfo.Name}. Size: {fileInfo.Length}.");
+
+                    //Запускаем счета скорости
+                    long speed = 0;
+                    long byteLoad = 0;
+                    new Task(()=> { Speedometer(fileInfo.Length, ref speed, ref byteLoad); }).Start();
+
+                    //Переименовывает файлы, если такие уже существовали
+                    fileInfo.Name = FileHandler.RenameExistsFile(fileInfo.Name, fileInfo.Extension);
+
+                    //Получаем файл
+                    long bufferSize;
+                    FileHandler._fileStream = new FileStream($@"{FileHandler.DowloadPath}\{fileInfo.Name}", FileMode.Append);
+                    for (long i = 0; i < fileInfo.Length; i += bufferSize)
                     {
                         bufferSize = Client.Available;
 
                         if (fileInfo.Length - i - bufferSize < 0)
-                            bufferSize = (int)(fileInfo.Length - i);
+                            bufferSize = fileInfo.Length - i;
                         else
+                            buffer = new byte[bufferSize];
 
-                        buffer = new byte[bufferSize];
+                        if (bufferSize != 0)
+                        {
+                            Stream.Read(buffer, 0, buffer.Length);
+                            FileHandler.WriteFile(buffer, fileInfo.Name);
+                        }
 
-                        Stream.Read(buffer, 0, buffer.Length);
+                        byteLoad += bufferSize;
 
-                        FileHandler.WriteFile(buffer, fileInfo.Name);
-                        receiveByte += bufferSize;
-                        DownloadOrLoad?.Invoke(fileInfo.Length, receiveByte);
+                        DownloadOrLoad?.Invoke(fileInfo.Length, byteLoad);
                         DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
-                            fileInfo.Length, v, receiveByte, watch.Elapsed));
+                            fileInfo.Length, speed, byteLoad, watch.Elapsed));
                     }
 
-                    //------------------------------------
-                    watch.Stop();
+                    //Закрываем потоки чтения файла 
+                    FileHandler._fileStream.Close();
+                    FileHandler._fileStream.Dispose();
+
+                    //Останавливаем секундомер и выводим результат
                     watch.Reset();
-                    Notify?.Invoke($"Отримано файл: {fileInfo.Name}.");
-                    ReceiveOrSendNotify.Invoke(fileInfo.Name);
+                    Notify?.Invoke($"Received file: {fileInfo.Name}.");
+                    ReceiveOrSendNotify?.Invoke(fileInfo.Name);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Stream.Write(BitConverter.GetBytes(0), 0, BitConverter.GetBytes(0).Length);
+
+                    Notify?.Invoke($"Error retrieving file.");
+                    Notify?.Invoke($"{e.Message}");
                     throw;
                 }
             }
@@ -165,13 +155,12 @@ namespace FileTransfer
         {
             try
             {
+                //Запускаем счет времени
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
 
+                //Отправляем информацию про файл
                 byte[] buffer;
-                //Отправляем информацию о файле
-
-
                 System.IO.FileInfo file = new System.IO.FileInfo(path);
                 FileTransfer.FileInfo fileInfo = new FileTransfer.FileInfo()
                 {
@@ -179,72 +168,89 @@ namespace FileTransfer
                     Extension = file.Extension,
                     Length = file.Length
                 };
+                Notify?.Invoke($"The file will be sent: {fileInfo.Name}.");
 
-                string json = JsonSerializer.Serialize<FileTransfer.FileInfo>(fileInfo);
-                buffer = Encoding.UTF8.GetBytes(json);
+                buffer = ObjectToByteArray(fileInfo);
+
+                byte[] objSize = BitConverter.GetBytes(buffer.Length);
+                Stream.Write(objSize, 0, objSize.Length);
                 Stream.Write(buffer, 0, buffer.Length);
-                
-                //---------------------------
 
+                //Размер буфера отправки
+                long bufferSize = 1000000;
 
-                int bufferSize = 1000000; //Скорость буфера для отправки
+                //Запускаем счета скорости
+                long speed = 0;
+                long byteLoad = 0;
+                new Task(() => { Speedometer(fileInfo.Length, ref speed, ref byteLoad); }).Start();
 
-                while (true) // Задержка 
-                {
-                    Thread.Sleep(1000);
-                    if (Client.Available == 0)
-                        break;
-                }
-
-                //Запускаем поток счета скорости
-
-                long sendByte = 0;
-                double v = 0;
-                Task speedTest = new Task(() =>
-                {
-                    long oldsendByte = 0;
-                    while (true)
-                    {
-                        Thread.Sleep(1000);
-                        v = sendByte - oldsendByte;
-                        oldsendByte = sendByte;
-                        if (sendByte == fileInfo.Length)
-                            break;
-                    }
-                });
-                speedTest.Start();
-
-                //------------------------------------
-
-
+                //Отправляем файл
                 FileHandler._fileStream = File.OpenRead(path);
-
-                for (int i = 0; i < FileHandler._fileStream.Length; i += bufferSize)
+                for (long i = 0; i < FileHandler._fileStream.Length; i += bufferSize)
                 {
                     if (FileHandler._fileStream.Length - i - bufferSize < 0)
-                        bufferSize = (int)FileHandler._fileStream.Length - i;
+                        bufferSize = FileHandler._fileStream.Length - i;
 
                     buffer = new byte[bufferSize];
-                    buffer = FileHandler.ReadFile(bufferSize);
+                    buffer = FileHandler.ReadFile((int)bufferSize);
                     Stream.Write(buffer, 0, buffer.Length);
-                    sendByte += bufferSize;
+                    byteLoad += bufferSize;
 
-                    DownloadOrLoad?.Invoke(fileInfo.Length, sendByte);
-                    DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
-                        fileInfo.Length, v, sendByte, watch.Elapsed));
+                    DownloadOrLoad?.Invoke(fileInfo.Length, byteLoad);
+                    DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name,
+                            fileInfo.Length, speed, byteLoad, watch.Elapsed));
                 }
 
+                //Закрываем потоки чтения файла 
                 FileHandler._fileStream.Dispose();
                 FileHandler._fileStream.Close();
 
-                Notify?.Invoke($"Відправлено файл: {fileInfo.Name}.");
+                //Уведомляем про успешное окончание операции
+                Notify?.Invoke($"File sent: {fileInfo.Name}.");
                 ReceiveOrSendNotify?.Invoke(fileInfo.Name);
                 watch.Reset();
-                watch.Stop();
+                /*
+                 * Задержка отправки следующего файла.  
+                 * Нужна по той причине что поток отправки преуспевает над потоком чтения и для избежания
+                 * конфликта искуствено затормаживаеться на 1 секунду.
+                 */
+                Thread.Sleep(1000);
             }
             catch (Exception)
             {
-
+                Notify?.Invoke($"Failed to send file.");
+            }
+        }
+        private static void Speedometer(long fileLength, ref long speed, ref long byteLoad)
+        {
+            long oldByte = 0;
+            while (true)
+            {
+                Thread.Sleep(1000);
+                speed = (byteLoad - oldByte);
+                oldByte = byteLoad;
+                if (byteLoad == fileLength)
+                    break;
+            }
+        }
+        public static byte[] ObjectToByteArray(Object obj)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
+            }
+        }
+        public static Object ByteArrayToObject(byte[] arrBytes)
+        {
+            using (var memStream = new MemoryStream())
+            {
+                var binForm = new BinaryFormatter();
+                memStream.Write(arrBytes, 0, arrBytes.Length);
+                memStream.Seek(0, SeekOrigin.Begin);
+                var obj = binForm.Deserialize(memStream);
+                return obj;
             }
         }
     }
