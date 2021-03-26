@@ -31,10 +31,12 @@ namespace FileTransfer
             {
                 Listener = new TcpListener(IPAddress.Any, port);
                 Listener.Start();
+                Notify?.Invoke("The server is running.");
                 return true;
             }
             catch (Exception)
             {
+                Notify?.Invoke("An error occurred while starting the server.");
                 return false;
             }
         }
@@ -42,6 +44,8 @@ namespace FileTransfer
         {
             try
             {
+                Notify?.Invoke("An error occurred while starting the server.");
+
                 Client = Listener.AcceptTcpClient();
                 Stream = Client.GetStream();
                 Client.ReceiveBufferSize = 1000000;
@@ -50,10 +54,12 @@ namespace FileTransfer
                 Task receiveFiles = new Task(ReceiveFiles);
                 receiveFiles.Start();
 
+                Notify?.Invoke("The client connects.");
                 return true;
             }
             catch (Exception)
             {
+                Notify?.Invoke("An error occurred while connecting the client.");
                 return false;
             }
         }
