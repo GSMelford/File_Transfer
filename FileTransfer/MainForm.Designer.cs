@@ -29,6 +29,7 @@ namespace FileTransfer
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.MenuPanel = new System.Windows.Forms.Panel();
             this.VersionLabel = new System.Windows.Forms.Label();
             this.DisconnectButton = new System.Windows.Forms.Button();
@@ -43,6 +44,11 @@ namespace FileTransfer
             this.LogPanel = new System.Windows.Forms.Panel();
             this.ShowEventsButton = new System.Windows.Forms.Button();
             this.EventsLog = new System.Windows.Forms.RichTextBox();
+            this.AddFilesButton = new System.Windows.Forms.Button();
+            this.ClearButton = new System.Windows.Forms.Button();
+            this.SendButton = new System.Windows.Forms.Button();
+            this.DownloadLabel = new System.Windows.Forms.Button();
+            this.СontextMenuTable = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuPanel.SuspendLayout();
             this.MainPanel.SuspendLayout();
             this.TopPanel.SuspendLayout();
@@ -52,6 +58,10 @@ namespace FileTransfer
             // MenuPanel
             // 
             this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(17)))), ((int)(((byte)(23)))));
+            this.MenuPanel.Controls.Add(this.DownloadLabel);
+            this.MenuPanel.Controls.Add(this.SendButton);
+            this.MenuPanel.Controls.Add(this.ClearButton);
+            this.MenuPanel.Controls.Add(this.AddFilesButton);
             this.MenuPanel.Controls.Add(this.VersionLabel);
             this.MenuPanel.Controls.Add(this.DisconnectButton);
             this.MenuPanel.Controls.Add(this.ClientButton);
@@ -80,6 +90,7 @@ namespace FileTransfer
             // DisconnectButton
             // 
             this.DisconnectButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.DisconnectButton.Enabled = false;
             this.DisconnectButton.FlatAppearance.BorderSize = 0;
             this.DisconnectButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
             this.DisconnectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -130,6 +141,7 @@ namespace FileTransfer
             // 
             // MainPanel
             // 
+            this.MainPanel.AutoScroll = true;
             this.MainPanel.BackColor = System.Drawing.Color.Transparent;
             this.MainPanel.Controls.Add(this.Table);
             this.MainPanel.Controls.Add(this.TopTable);
@@ -142,25 +154,23 @@ namespace FileTransfer
             // 
             // Table
             // 
-            this.Table.AutoScroll = true;
             this.Table.BackColor = System.Drawing.Color.Transparent;
             this.Table.ColumnCount = 7;
             this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
             this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 5F));
+            this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18F));
+            this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 7F));
             this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.Table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.Table.Cursor = System.Windows.Forms.Cursors.Default;
-            this.Table.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Table.Dock = System.Windows.Forms.DockStyle.Top;
             this.Table.Location = new System.Drawing.Point(0, 39);
             this.Table.Margin = new System.Windows.Forms.Padding(4);
             this.Table.Name = "Table";
             this.Table.RowCount = 1;
-            this.Table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.Table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 446F));
-            this.Table.Size = new System.Drawing.Size(894, 446);
+            this.Table.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.Table.Size = new System.Drawing.Size(894, 50);
             this.Table.TabIndex = 1;
             // 
             // TopTable
@@ -271,6 +281,81 @@ namespace FileTransfer
             this.EventsLog.TabIndex = 0;
             this.EventsLog.Text = "";
             // 
+            // AddFilesButton
+            // 
+            this.AddFilesButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.AddFilesButton.Enabled = false;
+            this.AddFilesButton.FlatAppearance.BorderSize = 0;
+            this.AddFilesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.AddFilesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.AddFilesButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.AddFilesButton.ForeColor = System.Drawing.Color.White;
+            this.AddFilesButton.Location = new System.Drawing.Point(0, 117);
+            this.AddFilesButton.Margin = new System.Windows.Forms.Padding(4);
+            this.AddFilesButton.Name = "AddFilesButton";
+            this.AddFilesButton.Size = new System.Drawing.Size(172, 39);
+            this.AddFilesButton.TabIndex = 8;
+            this.AddFilesButton.Text = "AddFiles";
+            this.AddFilesButton.UseVisualStyleBackColor = true;
+            this.AddFilesButton.Click += new System.EventHandler(this.AddFilesButton_Click);
+            // 
+            // ClearButton
+            // 
+            this.ClearButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ClearButton.Enabled = false;
+            this.ClearButton.FlatAppearance.BorderSize = 0;
+            this.ClearButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.ClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ClearButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.ClearButton.ForeColor = System.Drawing.Color.White;
+            this.ClearButton.Location = new System.Drawing.Point(0, 156);
+            this.ClearButton.Margin = new System.Windows.Forms.Padding(4);
+            this.ClearButton.Name = "ClearButton";
+            this.ClearButton.Size = new System.Drawing.Size(172, 39);
+            this.ClearButton.TabIndex = 9;
+            this.ClearButton.Text = "Clear";
+            this.ClearButton.UseVisualStyleBackColor = true;
+            // 
+            // SendButton
+            // 
+            this.SendButton.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SendButton.Enabled = false;
+            this.SendButton.FlatAppearance.BorderSize = 0;
+            this.SendButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.SendButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SendButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.SendButton.ForeColor = System.Drawing.Color.White;
+            this.SendButton.Location = new System.Drawing.Point(0, 457);
+            this.SendButton.Margin = new System.Windows.Forms.Padding(4);
+            this.SendButton.Name = "SendButton";
+            this.SendButton.Size = new System.Drawing.Size(172, 39);
+            this.SendButton.TabIndex = 10;
+            this.SendButton.Text = "Send";
+            this.SendButton.UseVisualStyleBackColor = true;
+            this.SendButton.Click += new System.EventHandler(this.SendButton_Click);
+            // 
+            // DownloadLabel
+            // 
+            this.DownloadLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.DownloadLabel.FlatAppearance.BorderSize = 0;
+            this.DownloadLabel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.DownloadLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DownloadLabel.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.DownloadLabel.ForeColor = System.Drawing.Color.White;
+            this.DownloadLabel.Location = new System.Drawing.Point(0, 418);
+            this.DownloadLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.DownloadLabel.Name = "DownloadLabel";
+            this.DownloadLabel.Size = new System.Drawing.Size(172, 39);
+            this.DownloadLabel.TabIndex = 11;
+            this.DownloadLabel.Text = "Download Folder";
+            this.DownloadLabel.UseVisualStyleBackColor = true;
+            this.DownloadLabel.Click += new System.EventHandler(this.DownloadLabel_Click);
+            // 
+            // СontextMenuTable
+            // 
+            this.СontextMenuTable.Name = "СontextMenuTable";
+            this.СontextMenuTable.Size = new System.Drawing.Size(61, 4);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -309,5 +394,10 @@ namespace FileTransfer
         private System.Windows.Forms.Panel LogPanel;
         private System.Windows.Forms.RichTextBox EventsLog;
         private System.Windows.Forms.Button ShowEventsButton;
+        private System.Windows.Forms.Button SendButton;
+        private System.Windows.Forms.Button ClearButton;
+        private System.Windows.Forms.Button AddFilesButton;
+        private System.Windows.Forms.Button DownloadLabel;
+        private System.Windows.Forms.ContextMenuStrip СontextMenuTable;
     }
 }

@@ -13,82 +13,42 @@ namespace FileTransfer
 {
     public partial class MainForm : Form
     {
-        //Number //File Name //ProgressBar //Precent //Speed //Size //Time
         private Point mousePoint;
         private bool isServer = false;
-        private bool ShowLog = false;
+        private bool ShowLog = true;
+        private TableControl tableControl;
         public delegate void FileTransferFormHandler(string message);
         private event FileTransferFormHandler Notify;
-
         public MainForm()
         {
             InitializeComponent();
+            
+            tableControl = new TableControl(TopTable, Table, СontextMenuTable);
 
-            Table.Visible = false;
-            TopTable.Visible = false;
             LogPanel.Size = new Size(0, 32);
             EventsLog.Size = new Size();
             MainPanel.Size = new Size(0, this.ClientSize.Height - 39 - 32);
             Notify += AddLog;
             NetworkConnection.Notify += AddLog;
+            NetworkConnection.ReceiveNotify += AddReceiveFile;
+            FileHandler.DowloadPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}";
+            NetworkConnection.DownloadOrLoadStatistics += UpdateTableHandler;
         }
-
+        private void UpdateTableHandler(NetworkConnectionArgs args)
+        {
+            Invoke((Action)(() => { tableControl.UpdateTable(args); }));
+        }
         public void AddLog(string message)
         {
-            Invoke((Action)(() => { EventsLog.Text += $"[{DateTime.Now.ToShortTimeString()}] {message}\r\n"; }));
-        }
-
-        private T InitializeControl<T>(string text, string name, Point location, Size size, 
-            Font font, Color forceColor, Color backColor, DockStyle style) where T : Control, new()
-        {
-            T control = new T
+            try
             {
-                Text = text,
-                Name = name,
-                Location = location,
-                Size = size,
-                Font = font,
-                ForeColor = forceColor,
-                BackColor = backColor,
-                Dock = style
-            };
-
-            return control;
+                Invoke((Action)(() => { EventsLog.Text += $"[{DateTime.Now.ToShortTimeString()}] {message}\r\n"; }));
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
-
-        private Label InitializeLabel(string text,string name, Point location, bool autoSize = true, Size? size = null,
-            Font font = null, Color? forceColor = null, Color? backColor = null, DockStyle style = DockStyle.None)
-        {
-            Label label = InitializeControl<Label>(text, name, location, size??new Size(0,0), font ?? SetFont(), 
-                forceColor ?? Color.White, backColor ?? Color.Transparent, style);
-            label.AutoSize = autoSize;
-            return label;
-        }
-
-        private TextBox InitializeTextBox(string text, string name, Point location, Size size, Font font = null, bool readOnly = false, 
-            HorizontalAlignment? alignment = null, int maxLength = 32767, Color? forceColor = null, Color? backColor = null,DockStyle style = DockStyle.None)
-        {
-            TextBox textBox = InitializeControl<TextBox>(text, name, location, size, font ?? SetFont(), forceColor ?? Color.Black, backColor ?? Color.White, style);
-            textBox.ReadOnly = readOnly;
-            textBox.TextAlign = alignment ?? HorizontalAlignment.Left;
-            textBox.MaxLength = maxLength;
-            return textBox;
-        }
-
-        private Button InitializeButton(string text, string name, Point location, Size size, Color? mouseOverBackColor = null,
-            Font font = null, Color? forceColor = null, Color? backColor = null, DockStyle style = DockStyle.None)
-        {
-            Button button = InitializeControl<Button>(text, name, location, size, font ?? SetFont(), forceColor ?? Color.White, 
-                backColor ?? Color.FromArgb(13, 17, 23),style);
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.UseVisualStyleBackColor = true;
-            button.FlatAppearance.MouseOverBackColor = mouseOverBackColor ?? Color.FromArgb(41, 50, 64);
-            return button;
-        }
-
-        private Font SetFont(float size = 10, FontStyle style = FontStyle.Regular) => new Font("Calibri", size, style, GraphicsUnit.Point, ((byte)(0)));
-
         private void HostButton_Click(object sender, EventArgs e)
         {
             MainPanel.Controls.Clear();
@@ -101,18 +61,18 @@ namespace FileTransfer
                 "\n3) Your computer must be connected to the network via a cable." +
                 "\n\nIf all these rules are sub-ice, enter the port to connect.";
 
-            Button connectButton = InitializeButton("Create", "serverButton", new Point(19, 148), new Size(154, 32));
+            Button connectButton = FormStyles.InitializeButton("Create", "serverButton", new Point(19, 148), new Size(154, 32));
             connectButton.Click += new System.EventHandler(StartServerButton_Click);
 
             MainPanel.Controls.AddRange(new Control[] 
             { 
                 connectButton,
-                InitializeTextBox("1234", "portBox", new Point(20, 102), new Size(154, 32), SetFont(12),false,HorizontalAlignment.Center,6),
-                InitializeTextBox(new WebClient().DownloadString("https://api.ipify.org"), "ipAdressBox", new Point(20, 40),
-                new Size(154, 32), SetFont(12), true, HorizontalAlignment.Center, 39),
-                InitializeLabel("Enter the port:", "portLabel", new Point(10, 74)),
-                InitializeLabel("Here is your IP address:", "ipLabel", new Point(10, 10)),
-                InitializeLabel(attentionText, "attentionLabel", new Point(0,0), true, null, SetFont(12), Color.Red, null, DockStyle.Bottom)
+                FormStyles.InitializeTextBox("1234", "portBox", new Point(20, 102), new Size(154, 32), FormStyles.SetFont(12),false,HorizontalAlignment.Center,6),
+                FormStyles.InitializeTextBox(new WebClient().DownloadString("https://api.ipify.org"), "ipAdressBox", new Point(20, 40),
+                new Size(154, 32), FormStyles.SetFont(12), true, HorizontalAlignment.Center, 39),
+                FormStyles.InitializeLabel("Enter the port:", "portLabel", new Point(10, 74)),
+                FormStyles.InitializeLabel("Here is your IP address:", "ipLabel", new Point(10, 10)),
+                FormStyles.InitializeLabel(attentionText, "attentionLabel", new Point(0,0),ContentAlignment.MiddleLeft, true, null, FormStyles.SetFont(12), Color.Red, null, DockStyle.Bottom)
             });
         }
         private void ClientButton_Click(object sender, EventArgs e)
@@ -123,26 +83,31 @@ namespace FileTransfer
 
             string attentionText = "You have to ask a friend in advance for which ip and port :)";
 
-            Button connectButton = InitializeButton("Connect", "connectButton", new Point(19, 148), new Size(154, 32));
+            Button connectButton = FormStyles.InitializeButton("Connect", "connectButton", new Point(19, 148), new Size(154, 32));
             connectButton.Click += new System.EventHandler(ConnectButton_Click);
 
             MainPanel.Controls.AddRange(new Control[]
             {
                 connectButton,
-                InitializeTextBox("", "portBox", new Point(20, 102), new Size(154, 32), SetFont(12),false,HorizontalAlignment.Center,6),
-                InitializeTextBox("", "ipAdressBox", new Point(20, 40),
-                new Size(154, 32), SetFont(12), false, HorizontalAlignment.Center, 39),
-                InitializeLabel("Enter the port:", "portLabel", new Point(10, 74)),
-                InitializeLabel("Here is your IP address:", "ipLabel", new Point(10, 10)),
-                InitializeLabel(attentionText, "attentionLabel", new Point(0,0), true, null, SetFont(12), Color.LightGray, null, DockStyle.Bottom)
+                FormStyles.InitializeTextBox("", "portBox", new Point(20, 102), new Size(154, 32), FormStyles.SetFont(12),false,HorizontalAlignment.Center,6),
+                FormStyles.InitializeTextBox("", "ipAdressBox", new Point(20, 40),
+                new Size(154, 32), FormStyles.SetFont(12), false, HorizontalAlignment.Center, 39),
+                FormStyles.InitializeLabel("Enter the port:", "portLabel", new Point(10, 74)),
+                FormStyles.InitializeLabel("Here is your IP address:", "ipLabel", new Point(10, 10)),
+                FormStyles.InitializeLabel(attentionText, "attentionLabel", new Point(0,0),ContentAlignment.MiddleLeft, true, null, FormStyles.SetFont(12), Color.LightGray, null, DockStyle.Bottom)
             });
+        }  
+        private void SetButtonsEnabled(bool hostButton, bool clientButton, bool disconnectButton)
+        {
+            Invoke((Action)(() => {
+                HostButton.Enabled = hostButton;
+                ClientButton.Enabled = clientButton;
+                DisconnectButton.Enabled = disconnectButton;
+            }));
         }
-
         private async void StartServerButton_Click(object sender, EventArgs e)
         {
-            HostButton.Enabled = false;
-            ClientButton.Enabled = false;
-            DisconnectButton.Enabled = false;
+            SetButtonsEnabled(false, false, false);
             MainPanel.Controls["serverButton"].Enabled = false;
 
             await Task.Run(() =>
@@ -153,9 +118,7 @@ namespace FileTransfer
                     ShowEventsButton_Click(null, null);
                     Notify?.Invoke("Invalid value in the port field.");
 
-                    HostButton.Enabled = true;
-                    ClientButton.Enabled = true;
-                    DisconnectButton.Enabled = true;
+                    SetButtonsEnabled(true, true, false);
                     MainPanel.Controls["serverButton"].Enabled = true;
 
                     return;
@@ -163,27 +126,67 @@ namespace FileTransfer
 
                 if (!NetworkConnection.StartServer(port) || !NetworkConnection.AcceptClient())
                 {
-                    HostButton.Enabled = true;
-                    ClientButton.Enabled = true;
-                    DisconnectButton.Enabled = true;
+                    SetButtonsEnabled(true, true, false);
                     MainPanel.Controls["serverButton"].Enabled = true;
                     return;
                 }
+
+                CreateTables();
+                SetButtonsEnabled(false, false, true);
+                Invoke((Action)(() => { WindowLabel.Text = "Received files:"; }));
             });
         }
-
         private void ConnectButton_Click(object sender, EventArgs e)
         {
+            SetButtonsEnabled(false, false, false);
+            MainPanel.Controls["connectButton"].Enabled = false;
 
+            if (!int.TryParse(MainPanel.Controls["portBox"].Text, out int port))
+            {
+                ShowLog = true;
+                ShowEventsButton_Click(null, null);
+                Notify?.Invoke("Invalid value in the port field.");
+
+                SetButtonsEnabled(true, true, false);
+                MainPanel.Controls["connectButton"].Enabled = true;
+
+                return;
+            }
+
+            if (!NetworkConnection.ConnectToServer(MainPanel.Controls["ipAdressBox"].Text, port))
+            {
+                SetButtonsEnabled(true, true, false);
+                MainPanel.Controls["connectButton"].Enabled = true;
+                return;
+            }
+            CreateTables();
+            SetButtonsEnabled(false, false, true);
+            Invoke((Action)(() => { WindowLabel.Text = "Files sent:"; }));
         }
-
-
-
+        private void CreateTables()
+        {
+            Invoke((Action)(() =>
+            {
+                MainPanel.Controls.Clear();
+                MainPanel.Controls.AddRange(new Control[] { tableControl.GetTable(), tableControl.GetTopTable() });
+                tableControl.FillTopTable();
+                if (!isServer)
+                {
+                    AddFilesButton.Enabled = true;
+                    SendButton.Enabled = true;
+                    ClearButton.Enabled = true;
+                }
+            }));
+        }
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
-
+            NetworkConnection.Disconnect();
+            MainPanel.Controls.Clear();
+            SetButtonsEnabled(true, true, true);
+            AddFilesButton.Enabled = false;
+            SendButton.Enabled = false;
+            ClearButton.Enabled = false;
         }
-
         //Управление панелью 
         private void TopPanel_MouseDown(object sender, MouseEventArgs e)
         {
@@ -209,11 +212,6 @@ namespace FileTransfer
                 this.Top += e.Y - mousePoint.Y;
             }
         }
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void ShowEventsButton_Click(object sender, EventArgs e)
         {
             Invoke((Action)(() =>
@@ -234,7 +232,6 @@ namespace FileTransfer
                 }
             }));
         }
-
         private void MainForm_Resize(object sender, EventArgs e)
         {
             if (!ShowLog)
@@ -244,6 +241,45 @@ namespace FileTransfer
             else
             {
                 MainPanel.Size = new Size(0, this.ClientSize.Height - 39 - 32);
+            }
+        }
+        private void AddFilesButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog file = new OpenFileDialog();
+            file.Multiselect = true;
+            file.Title = "Select file:";
+            file.InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}";
+            if (file.ShowDialog() == DialogResult.OK)
+            {
+                foreach (var path in file.FileNames)
+                {
+                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(path);
+                    FileHandler.AddFilePath(fileInfo.Name, path);
+                    tableControl.AddRow(fileInfo.Name, fileInfo.Length);
+                }
+            }
+        }
+        private async void SendButton_Click(object sender, EventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                foreach (var path in FileHandler.GetFilePaths())
+                {
+                    NetworkConnection.SendFiles(path.Value);
+                }
+                FileHandler.GetFilePaths().Clear();
+            });
+        }
+        private void AddReceiveFile(string fileName)
+        {
+            Invoke((Action)(() => { tableControl.AddRow(fileName, 0); }));
+        }
+        private void DownloadLabel_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                FileHandler.DowloadPath = folderBrowser.SelectedPath;
             }
         }
     }

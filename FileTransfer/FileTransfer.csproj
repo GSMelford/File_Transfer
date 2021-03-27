@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="FileHandler.cs" />
     <Compile Include="FileInfo.cs" />
+    <Compile Include="FormStyles.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +78,7 @@
     <Compile Include="ServerForm.Designer.cs">
       <DependentUpon>ServerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TableControl.cs" />
     <EmbeddedResource Include="FileTransferForm.resx">
       <DependentUpon>FileTransferForm.cs</DependentUpon>
     </EmbeddedResource>

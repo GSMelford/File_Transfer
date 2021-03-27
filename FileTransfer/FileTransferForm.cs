@@ -16,7 +16,6 @@ namespace FileTransfer
 
             Notify += AddStatus;
             NetworkConnection.Notify += AddStatus;
-            NetworkConnection.ReceiveOrSendNotify += UpdateReceiveOrSendList;
             NetworkConnection.DownloadOrLoad += UpdateLoadBar;
             NetworkConnection.DownloadOrLoadStatistics += UpdateLoadStatus;
 

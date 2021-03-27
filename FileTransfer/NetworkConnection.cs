@@ -16,7 +16,7 @@ namespace FileTransfer
         public delegate void DownloadOrLoadStatisticsHandler(NetworkConnectionArgs e);
         public static event DownloadOrLoadStatisticsHandler DownloadOrLoadStatistics;
         public static event NetworkConnectionHandler Notify;
-        public static event NetworkConnectionHandler ReceiveOrSendNotify;
+        public static event NetworkConnectionHandler ReceiveNotify;
         public static event DownloadOrLoadHandler DownloadOrLoad;
 
         private static string IPServer;
@@ -44,7 +44,7 @@ namespace FileTransfer
         {
             try
             {
-                Notify?.Invoke("An error occurred while starting the server.");
+                Notify?.Invoke("Waiting for user connection...");
 
                 Client = Listener.AcceptTcpClient();
                 Stream = Client.GetStream();
@@ -63,19 +63,22 @@ namespace FileTransfer
                 return false;
             }
         }
-        public static bool ConnectToServer(string IP, int  port)
+        public static bool ConnectToServer(string ip, int  port)
         {
             try
             {
-                IPServer = IP;
+                Notify?.Invoke("Connect to server ...");
+                IPServer = ip;
                 Port = port;
                 Client = new TcpClient();
                 Client.Connect(IPServer, Port);
                 Stream = Client.GetStream();
+                Notify?.Invoke("The connection to the server was successful.");
                 return true;
             }
             catch (Exception)
             {
+                Notify?.Invoke("An error occurred while connecting to the server.");
                 return false;
             }
         }
@@ -104,6 +107,7 @@ namespace FileTransfer
                     Stream.Read(buffer, 0, buffer.Length);
                     FileInfo fileInfo = (FileInfo)ByteArrayToObject(buffer);
                     Notify?.Invoke($"Waiting for file: {fileInfo.Name}. Size: {fileInfo.Length}.");
+                    ReceiveNotify?.Invoke(fileInfo.Name);
 
                     //Запускаем счета скорости
                     long speed = 0;
@@ -145,15 +149,12 @@ namespace FileTransfer
                     //Останавливаем секундомер и выводим результат
                     watch.Reset();
                     Notify?.Invoke($"Received file: {fileInfo.Name}.");
-                    ReceiveOrSendNotify?.Invoke(fileInfo.Name);
+                    
                 }
                 catch (Exception e)
                 {
-                    Stream.Write(BitConverter.GetBytes(0), 0, BitConverter.GetBytes(0).Length);
-
                     Notify?.Invoke($"Error retrieving file.");
                     Notify?.Invoke($"{e.Message}");
-                    throw;
                 }
             }
         }
@@ -213,7 +214,6 @@ namespace FileTransfer
 
                 //Уведомляем про успешное окончание операции
                 Notify?.Invoke($"File sent: {fileInfo.Name}.");
-                ReceiveOrSendNotify?.Invoke(fileInfo.Name);
                 watch.Reset();
                 /*
                  * Задержка отправки следующего файла.  
