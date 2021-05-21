@@ -1,48 +1,54 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace FileTransfer
+namespace FileTransfer.FileWorker
 {
-    class FileHandler
+    internal static class FileHandler
     {
-        private static string _downloadPath;
-        public static string DowloadPath 
-        {
-            get => _downloadPath;
-            set { _downloadPath = value; }
-        }
-        public static FileStream _fileStream;
+        public static string DownloadPath { get; set; }
+
+        public static FileStream FileStream;
+        
         //private static List<string> FilePaths = new List<string>();
-        public static Dictionary<string, string> FilePaths = new Dictionary<string, string>();
+        
+        private static readonly Dictionary<string, string> FilePaths = new Dictionary<string, string>();
+        
         public static void AddFilePath(string name,string path)
         {
             FilePaths.Add(name,path);
         }
+        
         public static Dictionary<string, string> GetFilePaths() => FilePaths;
+        
         public static void WriteFile(byte[] file, string fileName)
         {
-            _fileStream.Write(file, 0, file.Length);
+            FileStream.Write(file, 0, file.Length);
         }
+        
         public static byte[] ReadFile(int bufferSize)
         {
             byte[] buffer = new byte[bufferSize];
-            _fileStream.Read(buffer, 0, buffer.Length);
+            FileStream.Read(buffer, 0, buffer.Length);
             return buffer;
         }
-        public static bool Exists(string fileName) => new System.IO.FileInfo($@"{_downloadPath}\{fileName}").Exists;
+        
+        private static bool Exists(string fileName) => new System.IO.FileInfo($@"{DownloadPath}\{fileName}").Exists;
+        
         public static string RenameExistsFile(string fileName, string extension)
         {
             int number = 1;
             int index = fileName.LastIndexOf('.');
-            string Name = fileName.Substring(0, index);
-            while (FileHandler.Exists(fileName))
+            string name = fileName.Substring(0, index);
+            
+            while (Exists(fileName))
             {
                 if (index != -1)
-                    fileName = Name + $" ({number})" + extension;
+                    fileName = name + $" ({number})" + extension;
                 else
                     fileName += $" ({number})";
                 number++;
             }
+            
             return fileName;
         }
     }

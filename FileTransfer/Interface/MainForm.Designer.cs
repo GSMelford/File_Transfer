@@ -1,5 +1,5 @@
 ﻿
-namespace FileTransfer
+namespace FileTransfer.Interface
 {
     partial class MainForm
     {

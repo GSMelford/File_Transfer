@@ -6,10 +6,12 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
+using FileTransfer.FileWorker;
+using FileInfo = FileTransfer.FileWorker.FileInfo;
 
-namespace FileTransfer
+namespace FileTransfer.Network
 {
-    class NetworkConnection
+    internal static class NetworkConnection
     {
         public delegate void NetworkConnectionHandler(string message);
         public delegate void DownloadOrLoadHandler(long max, long value);
@@ -19,18 +21,18 @@ namespace FileTransfer
         public static event NetworkConnectionHandler ReceiveNotify;
         public static event DownloadOrLoadHandler DownloadOrLoad;
 
-        private static string IPServer;
-        private static int Port;
-        private static TcpListener Listener;
-        private static TcpClient Client;
-        private static NetworkStream Stream;
+        private static string _ipServer;
+        private static int _port;
+        private static TcpListener _listener;
+        private static TcpClient _client;
+        private static NetworkStream _stream;
 
         public static bool StartServer(int port)
         {
             try
             {
-                Listener = new TcpListener(IPAddress.Any, port);
-                Listener.Start();
+                _listener = new TcpListener(IPAddress.Any, port);
+                _listener.Start();
                 Notify?.Invoke("The server is running.");
                 return true;
             }
@@ -40,17 +42,18 @@ namespace FileTransfer
                 return false;
             }
         }
+        
         public static bool AcceptClient()
         {
             try
             {
                 Notify?.Invoke("Waiting for user connection...");
 
-                Client = Listener.AcceptTcpClient();
-                Stream = Client.GetStream();
-                Client.ReceiveBufferSize = 1000000;
-                Client.SendBufferSize = 1000000;
-                //Запуск потока для получения файлов
+                _client = _listener.AcceptTcpClient();
+                _stream = _client.GetStream();
+                _client.ReceiveBufferSize = 1000000;
+                _client.SendBufferSize = 1000000;
+                
                 Task receiveFiles = new Task(ReceiveFiles);
                 receiveFiles.Start();
 
@@ -63,16 +66,17 @@ namespace FileTransfer
                 return false;
             }
         }
+        
         public static bool ConnectToServer(string ip, int  port)
         {
             try
             {
                 Notify?.Invoke("Connect to server ...");
-                IPServer = ip;
-                Port = port;
-                Client = new TcpClient();
-                Client.Connect(IPServer, Port);
-                Stream = Client.GetStream();
+                _ipServer = ip;
+                _port = port;
+                _client = new TcpClient();
+                _client.Connect(_ipServer, _port);
+                _stream = _client.GetStream();
                 Notify?.Invoke("The connection to the server was successful.");
                 return true;
             }
@@ -82,12 +86,14 @@ namespace FileTransfer
                 return false;
             }
         }
+        
         public static void Disconnect()
         {
-            Listener?.Stop();
-            Client?.Close();
-            Stream?.Close();
+            _listener?.Stop();
+            _client?.Close();
+            _stream?.Close();
         }
+        
         private static void ReceiveFiles()
         {
             Stopwatch watch = new Stopwatch();
@@ -97,14 +103,14 @@ namespace FileTransfer
                 {
                     //Передаем информацию о файле, который сейчас будет передавать
                     byte[] buffer = new byte[4];
-                    Stream.Read(buffer, 0, buffer.Length);
+                    _stream.Read(buffer, 0, buffer.Length);
 
                     //Запускаем счет времени
                     watch.Start();
                     //----------------------
 
                     buffer = new byte[BitConverter.ToInt32(buffer, 0)];
-                    Stream.Read(buffer, 0, buffer.Length);
+                    _stream.Read(buffer, 0, buffer.Length);
                     FileInfo fileInfo = (FileInfo)ByteArrayToObject(buffer);
                     Notify?.Invoke($"Waiting for file: {fileInfo.Name}. Size: {fileInfo.Length}.");
                     ReceiveNotify?.Invoke(fileInfo.Name);
@@ -119,10 +125,10 @@ namespace FileTransfer
 
                     //Получаем файл
                     long bufferSize;
-                    FileHandler._fileStream = new FileStream($@"{FileHandler.DowloadPath}\{fileInfo.Name}", FileMode.Append);
+                    FileHandler.FileStream = new FileStream($@"{FileHandler.DownloadPath}\{fileInfo.Name}", FileMode.Append);
                     for (long i = 0; i < fileInfo.Length; i += bufferSize)
                     {
-                        bufferSize = Client.Available;
+                        bufferSize = _client.Available;
 
                         if (fileInfo.Length - i - bufferSize < 0)
                             bufferSize = fileInfo.Length - i;
@@ -131,7 +137,7 @@ namespace FileTransfer
 
                         if (bufferSize != 0)
                         {
-                            Stream.Read(buffer, 0, buffer.Length);
+                            _stream.Read(buffer, 0, buffer.Length);
                             FileHandler.WriteFile(buffer, fileInfo.Name);
                         }
 
@@ -143,8 +149,8 @@ namespace FileTransfer
                     }
 
                     //Закрываем потоки чтения файла 
-                    FileHandler._fileStream.Close();
-                    FileHandler._fileStream.Dispose();
+                    FileHandler.FileStream.Close();
+                    FileHandler.FileStream.Dispose();
 
                     //Останавливаем секундомер и выводим результат
                     watch.Reset();
@@ -158,6 +164,7 @@ namespace FileTransfer
                 }
             }
         }
+        
         public static void SendFiles(string path)
         {
             try
@@ -169,7 +176,7 @@ namespace FileTransfer
                 //Отправляем информацию про файл
                 byte[] buffer;
                 System.IO.FileInfo file = new System.IO.FileInfo(path);
-                FileTransfer.FileInfo fileInfo = new FileTransfer.FileInfo()
+                FileInfo fileInfo = new FileInfo()
                 {
                     Name = file.Name,
                     Extension = file.Extension,
@@ -180,8 +187,8 @@ namespace FileTransfer
                 buffer = ObjectToByteArray(fileInfo);
 
                 byte[] objSize = BitConverter.GetBytes(buffer.Length);
-                Stream.Write(objSize, 0, objSize.Length);
-                Stream.Write(buffer, 0, buffer.Length);
+                _stream.Write(objSize, 0, objSize.Length);
+                _stream.Write(buffer, 0, buffer.Length);
 
                 //Размер буфера отправки
                 long bufferSize = 1000000;
@@ -192,15 +199,15 @@ namespace FileTransfer
                 new Task(() => { Speedometer(fileInfo.Length, ref speed, ref byteLoad); }).Start();
 
                 //Отправляем файл
-                FileHandler._fileStream = File.OpenRead(path);
-                for (long i = 0; i < FileHandler._fileStream.Length; i += bufferSize)
+                FileHandler.FileStream = System.IO.File.OpenRead(path);
+                for (long i = 0; i < FileHandler.FileStream.Length; i += bufferSize)
                 {
-                    if (FileHandler._fileStream.Length - i - bufferSize < 0)
-                        bufferSize = FileHandler._fileStream.Length - i;
+                    if (FileHandler.FileStream.Length - i - bufferSize < 0)
+                        bufferSize = FileHandler.FileStream.Length - i;
 
                     buffer = new byte[bufferSize];
                     buffer = FileHandler.ReadFile((int)bufferSize);
-                    Stream.Write(buffer, 0, buffer.Length);
+                    _stream.Write(buffer, 0, buffer.Length);
                     byteLoad += bufferSize;
 
                     DownloadOrLoad?.Invoke(fileInfo.Length, byteLoad);
@@ -209,8 +216,8 @@ namespace FileTransfer
                 }
 
                 //Закрываем потоки чтения файла 
-                FileHandler._fileStream.Dispose();
-                FileHandler._fileStream.Close();
+                FileHandler.FileStream.Dispose();
+                FileHandler.FileStream.Close();
 
                 //Уведомляем про успешное окончание операции
                 Notify?.Invoke($"File sent: {fileInfo.Name}.");
@@ -227,9 +234,13 @@ namespace FileTransfer
                 Notify?.Invoke($"Failed to send file.");
             }
         }
+        
         private static void Speedometer(long fileLength, ref long speed, ref long byteLoad)
         {
+            if (speed <= 0) throw new ArgumentOutOfRangeException(nameof(speed));
+            
             long oldByte = 0;
+            
             while (true)
             {
                 Thread.Sleep(1000);
@@ -239,7 +250,8 @@ namespace FileTransfer
                     break;
             }
         }
-        public static byte[] ObjectToByteArray(Object obj)
+
+        private static byte[] ObjectToByteArray(object obj)
         {
             BinaryFormatter bf = new BinaryFormatter();
             using (var ms = new MemoryStream())
@@ -248,7 +260,8 @@ namespace FileTransfer
                 return ms.ToArray();
             }
         }
-        public static Object ByteArrayToObject(byte[] arrBytes)
+
+        private static object ByteArrayToObject(byte[] arrBytes)
         {
             using (var memStream = new MemoryStream())
             {

@@ -1,7 +1,7 @@
 ﻿
 using System.Windows.Forms;
 
-namespace FileTransfer
+namespace FileTransfer.Interface
 {
     partial class FileTransferForm
     {

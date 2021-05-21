@@ -1,29 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FileTransfer.FileWorker;
+using FileTransfer.Interface.Settings;
+using FileTransfer.Network;
 
-namespace FileTransfer
+namespace FileTransfer.Interface
 {
     public partial class MainForm : Form
     {
-        private Point mousePoint;
-        private bool isServer = false;
-        private bool ShowLog = true;
-        private TableControl tableControl;
-        public delegate void FileTransferFormHandler(string message);
+        private Point _mousePoint;
+        
+        private bool _isServer;
+        
+        private bool _showLog = true;
+        
+        private readonly TableControl _tableControl;
+
+        private delegate void FileTransferFormHandler(string message);
+        
         private event FileTransferFormHandler Notify;
+        
         public MainForm()
         {
             InitializeComponent();
             
-            tableControl = new TableControl(TopTable, Table, СontextMenuTable);
+            _tableControl = new TableControl(TopTable, Table, СontextMenuTable);
 
             LogPanel.Size = new Size(0, 32);
             EventsLog.Size = new Size();
@@ -31,14 +35,16 @@ namespace FileTransfer
             Notify += AddLog;
             NetworkConnection.Notify += AddLog;
             NetworkConnection.ReceiveNotify += AddReceiveFile;
-            FileHandler.DowloadPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}";
+            FileHandler.DownloadPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}";
             NetworkConnection.DownloadOrLoadStatistics += UpdateTableHandler;
         }
+        
         private void UpdateTableHandler(NetworkConnectionArgs args)
         {
-            Invoke((Action)(() => { tableControl.UpdateTable(args); }));
+            Invoke((Action)(() => { _tableControl.UpdateTable(args); }));
         }
-        public void AddLog(string message)
+
+        private void AddLog(string message)
         {
             try
             {
@@ -49,10 +55,11 @@ namespace FileTransfer
                 return;
             }
         }
+        
         private void HostButton_Click(object sender, EventArgs e)
         {
             MainPanel.Controls.Clear();
-            isServer = true;
+            _isServer = true;
             WindowLabel.Text = "Ctreate host:";
 
             string attentionText = "Attention! To create a server you must have:" +
@@ -75,10 +82,11 @@ namespace FileTransfer
                 FormStyles.InitializeLabel(attentionText, "attentionLabel", new Point(0,0),ContentAlignment.MiddleLeft, true, null, FormStyles.SetFont(12), Color.Red, null, DockStyle.Bottom)
             });
         }
+        
         private void ClientButton_Click(object sender, EventArgs e)
         {
             MainPanel.Controls.Clear();
-            isServer = false;
+            _isServer = false;
             WindowLabel.Text = "Connection to the host:";
 
             string attentionText = "You have to ask a friend in advance for which ip and port :)";
@@ -97,6 +105,7 @@ namespace FileTransfer
                 FormStyles.InitializeLabel(attentionText, "attentionLabel", new Point(0,0),ContentAlignment.MiddleLeft, true, null, FormStyles.SetFont(12), Color.LightGray, null, DockStyle.Bottom)
             });
         }  
+        
         private void SetButtonsEnabled(bool hostButton, bool clientButton, bool disconnectButton)
         {
             Invoke((Action)(() => {
@@ -105,6 +114,7 @@ namespace FileTransfer
                 DisconnectButton.Enabled = disconnectButton;
             }));
         }
+        
         private async void StartServerButton_Click(object sender, EventArgs e)
         {
             SetButtonsEnabled(false, false, false);
@@ -114,7 +124,7 @@ namespace FileTransfer
             {
                 if (!int.TryParse(MainPanel.Controls["portBox"].Text, out int port))
                 {
-                    ShowLog = true;
+                    _showLog = true;
                     ShowEventsButton_Click(null, null);
                     Notify?.Invoke("Invalid value in the port field.");
 
@@ -136,6 +146,7 @@ namespace FileTransfer
                 Invoke((Action)(() => { WindowLabel.Text = "Received files:"; }));
             });
         }
+        
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             SetButtonsEnabled(false, false, false);
@@ -143,7 +154,7 @@ namespace FileTransfer
 
             if (!int.TryParse(MainPanel.Controls["portBox"].Text, out int port))
             {
-                ShowLog = true;
+                _showLog = true;
                 ShowEventsButton_Click(null, null);
                 Notify?.Invoke("Invalid value in the port field.");
 
@@ -163,14 +174,15 @@ namespace FileTransfer
             SetButtonsEnabled(false, false, true);
             Invoke((Action)(() => { WindowLabel.Text = "Files sent:"; }));
         }
+        
         private void CreateTables()
         {
             Invoke((Action)(() =>
             {
                 MainPanel.Controls.Clear();
-                MainPanel.Controls.AddRange(new Control[] { tableControl.GetTable(), tableControl.GetTopTable() });
-                tableControl.FillTopTable();
-                if (!isServer)
+                MainPanel.Controls.AddRange(new Control[] { _tableControl.GetTable(), _tableControl.GetTopTable() });
+                _tableControl.FillTopTable();
+                if (!_isServer)
                 {
                     AddFilesButton.Enabled = true;
                     SendButton.Enabled = true;
@@ -178,6 +190,7 @@ namespace FileTransfer
                 }
             }));
         }
+        
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
             NetworkConnection.Disconnect();
@@ -187,78 +200,74 @@ namespace FileTransfer
             SendButton.Enabled = false;
             ClearButton.Enabled = false;
         }
-        //Управление панелью 
+        
         private void TopPanel_MouseDown(object sender, MouseEventArgs e)
         {
-            mousePoint = new Point(e.X, e.Y);
+            _mousePoint = new Point(e.X, e.Y);
         }
+        
         private void TopPanel_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                this.Left += e.X - mousePoint.X;
-                this.Top += e.Y - mousePoint.Y;
-            }
+            if (e.Button != MouseButtons.Left) return;
+            Left += e.X - _mousePoint.X;
+            Top += e.Y - _mousePoint.Y;
         }
+        
         private void ProgramName_MouseDown(object sender, MouseEventArgs e)
         {
-            mousePoint = new Point(e.X, e.Y);
+            _mousePoint = new Point(e.X, e.Y);
         }
+        
         private void ProgramName_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                this.Left += e.X - mousePoint.X;
-                this.Top += e.Y - mousePoint.Y;
-            }
+            if (e.Button != MouseButtons.Left) return;
+            Left += e.X - _mousePoint.X;
+            Top += e.Y - _mousePoint.Y;
         }
+        
         private void ShowEventsButton_Click(object sender, EventArgs e)
         {
             Invoke((Action)(() =>
             {
-                if (!ShowLog)
+                if (!_showLog)
                 {
                     LogPanel.Size = new Size(0, 32);
                     EventsLog.Size = new Size();
                     MainPanel.Size = new Size(0, this.ClientSize.Height - 39 - 32);
-                    ShowLog = true;
+                    _showLog = true;
                 }
                 else
                 {
                     LogPanel.Size = new Size(0, 120);
                     EventsLog.Size = new Size(0, 88);
                     MainPanel.Size = new Size(0, this.ClientSize.Height - 39 - 120);
-                    ShowLog = false;
+                    _showLog = false;
                 }
             }));
         }
+        
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            if (!ShowLog)
-            {
-                MainPanel.Size = new Size(0, this.ClientSize.Height - 39 - 120);
-            }
-            else
-            {
-                MainPanel.Size = new Size(0, this.ClientSize.Height - 39 - 32);
-            }
+            MainPanel.Size = !_showLog 
+                ? new Size(0, this.ClientSize.Height - 39 - 120) 
+                : new Size(0, this.ClientSize.Height - 39 - 32);
         }
+        
         private void AddFilesButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
             file.Multiselect = true;
             file.Title = "Select file:";
             file.InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}";
-            if (file.ShowDialog() == DialogResult.OK)
+            if (file.ShowDialog() != DialogResult.OK) return;
+            foreach (var path in file.FileNames)
             {
-                foreach (var path in file.FileNames)
-                {
-                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(path);
-                    FileHandler.AddFilePath(fileInfo.Name, path);
-                    tableControl.AddRow(fileInfo.Name, fileInfo.Length);
-                }
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(path);
+                FileHandler.AddFilePath(fileInfo.Name, path);
+                _tableControl.AddRow(fileInfo.Name, fileInfo.Length);
             }
         }
+        
         private async void SendButton_Click(object sender, EventArgs e)
         {
             await Task.Run(() =>
@@ -270,17 +279,20 @@ namespace FileTransfer
                 FileHandler.GetFilePaths().Clear();
             });
         }
+        
         private void AddReceiveFile(string fileName)
         {
-            Invoke((Action)(() => { tableControl.AddRow(fileName, 0); }));
+            Invoke((Action)(() => { _tableControl.AddRow(fileName, 0); }));
         }
+        
         private void DownloadLabel_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
             if (folderBrowser.ShowDialog() == DialogResult.OK)
             {
-                FileHandler.DowloadPath = folderBrowser.SelectedPath;
+                FileHandler.DownloadPath = folderBrowser.SelectedPath;
             }
         }
+        
     }
 }

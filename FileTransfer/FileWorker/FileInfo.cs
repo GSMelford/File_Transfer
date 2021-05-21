@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace FileTransfer
+namespace FileTransfer.FileWorker
 {
     [Serializable]
-    class FileInfo
+    internal class FileInfo
     {
         public string Name { get; set; }
         public string Extension { get; set; }

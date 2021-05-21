@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace FileTransfer
+namespace FileTransfer.Interface.Settings
 {
-    static class FormStyles
+    internal static class FormStyles
     {
-        public static T InitializeControl<T>(string text, string name, Point location, Size size,
+        private static T InitializeControl<T>(string text, string name, Point location, Size size,
             Font font, Color forceColor, Color backColor, DockStyle style) where T : Control, new()
         {
             T control = new T

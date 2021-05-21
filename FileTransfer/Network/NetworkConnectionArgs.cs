@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace FileTransfer
+namespace FileTransfer.Network
 {
     public class NetworkConnectionArgs
     {
         public string FileName { get; }
         public long FileLength { get; }
         public double Speed { get; }
-        public long СurrentLength { get; }
+        public long CurrentLength { get; }
         public TimeSpan Time { get; }
 
         public NetworkConnectionArgs(string fileName, long fileLength, double speed, long currentLength, TimeSpan time)
@@ -15,7 +15,7 @@ namespace FileTransfer
             FileName = fileName;
             FileLength = fileLength;
             Speed = speed;
-            СurrentLength = currentLength;
+            CurrentLength = currentLength;
             Time = time;
         }
     }
