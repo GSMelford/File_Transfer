@@ -51,12 +51,6 @@
     <Compile Include="FileWorker\FileInfo.cs" />
     <Compile Include="Interface\Settings\FormStyles.cs" />
     <Compile Include="Interface\Settings\TableControl.cs" />
-    <Compile Include="Interface\FileTransferForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Interface\FileTransferForm.Designer.cs">
-      <DependentUpon>FileTransferForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interface\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,9 +75,6 @@
     </Compile>
     <EmbeddedResource Include="ClientForm.resx">
       <DependentUpon>ClientForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interface\FileTransferForm.resx">
-      <DependentUpon>FileTransferForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

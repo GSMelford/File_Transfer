@@ -47,11 +47,11 @@ namespace FileTransfer.Interface.Settings
             Font font = null, Color? forceColor = null, Color? backColor = null, DockStyle style = DockStyle.None)
         {
             Button button = InitializeControl<Button>(text, name, location, size, font ?? SetFont(), forceColor ?? Color.White,
-                backColor ?? Color.FromArgb(13, 17, 23), style);
+                backColor ?? Color.FromArgb(100, 89, 156), style);
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 0;
             button.UseVisualStyleBackColor = true;
-            button.FlatAppearance.MouseOverBackColor = mouseOverBackColor ?? Color.FromArgb(41, 50, 64);
+            button.FlatAppearance.MouseOverBackColor = mouseOverBackColor ?? Color.FromArgb(125, 114, 181);
             return button;
         }
 

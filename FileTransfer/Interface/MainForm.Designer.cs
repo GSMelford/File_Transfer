@@ -30,7 +30,12 @@ namespace FileTransfer.Interface
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.MenuPanel = new System.Windows.Forms.Panel();
+            this.DownloadLabel = new System.Windows.Forms.Button();
+            this.SendButton = new System.Windows.Forms.Button();
+            this.ClearButton = new System.Windows.Forms.Button();
+            this.AddFilesButton = new System.Windows.Forms.Button();
             this.VersionLabel = new System.Windows.Forms.Label();
             this.DisconnectButton = new System.Windows.Forms.Button();
             this.ClientButton = new System.Windows.Forms.Button();
@@ -44,10 +49,6 @@ namespace FileTransfer.Interface
             this.LogPanel = new System.Windows.Forms.Panel();
             this.ShowEventsButton = new System.Windows.Forms.Button();
             this.EventsLog = new System.Windows.Forms.RichTextBox();
-            this.AddFilesButton = new System.Windows.Forms.Button();
-            this.ClearButton = new System.Windows.Forms.Button();
-            this.SendButton = new System.Windows.Forms.Button();
-            this.DownloadLabel = new System.Windows.Forms.Button();
             this.СontextMenuTable = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MenuPanel.SuspendLayout();
             this.MainPanel.SuspendLayout();
@@ -57,7 +58,7 @@ namespace FileTransfer.Interface
             // 
             // MenuPanel
             // 
-            this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(17)))), ((int)(((byte)(23)))));
+            this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(89)))), ((int)(((byte)(156)))));
             this.MenuPanel.Controls.Add(this.DownloadLabel);
             this.MenuPanel.Controls.Add(this.SendButton);
             this.MenuPanel.Controls.Add(this.ClearButton);
@@ -72,6 +73,80 @@ namespace FileTransfer.Interface
             this.MenuPanel.Name = "MenuPanel";
             this.MenuPanel.Size = new System.Drawing.Size(172, 529);
             this.MenuPanel.TabIndex = 1;
+            // 
+            // DownloadLabel
+            // 
+            this.DownloadLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.DownloadLabel.FlatAppearance.BorderSize = 0;
+            this.DownloadLabel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.DownloadLabel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
+            this.DownloadLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DownloadLabel.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.DownloadLabel.ForeColor = System.Drawing.Color.White;
+            this.DownloadLabel.Location = new System.Drawing.Point(0, 418);
+            this.DownloadLabel.Margin = new System.Windows.Forms.Padding(4);
+            this.DownloadLabel.Name = "DownloadLabel";
+            this.DownloadLabel.Size = new System.Drawing.Size(172, 39);
+            this.DownloadLabel.TabIndex = 11;
+            this.DownloadLabel.Text = "Download Folder";
+            this.DownloadLabel.UseVisualStyleBackColor = true;
+            this.DownloadLabel.Click += new System.EventHandler(this.DownloadLabel_Click);
+            // 
+            // SendButton
+            // 
+            this.SendButton.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SendButton.Enabled = false;
+            this.SendButton.FlatAppearance.BorderSize = 0;
+            this.SendButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.SendButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
+            this.SendButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SendButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.SendButton.ForeColor = System.Drawing.Color.White;
+            this.SendButton.Location = new System.Drawing.Point(0, 457);
+            this.SendButton.Margin = new System.Windows.Forms.Padding(4);
+            this.SendButton.Name = "SendButton";
+            this.SendButton.Size = new System.Drawing.Size(172, 39);
+            this.SendButton.TabIndex = 10;
+            this.SendButton.Text = "Send";
+            this.SendButton.UseVisualStyleBackColor = true;
+            this.SendButton.Click += new System.EventHandler(this.SendButton_Click);
+            // 
+            // ClearButton
+            // 
+            this.ClearButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ClearButton.Enabled = false;
+            this.ClearButton.FlatAppearance.BorderSize = 0;
+            this.ClearButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.ClearButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
+            this.ClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ClearButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.ClearButton.ForeColor = System.Drawing.Color.White;
+            this.ClearButton.Location = new System.Drawing.Point(0, 156);
+            this.ClearButton.Margin = new System.Windows.Forms.Padding(4);
+            this.ClearButton.Name = "ClearButton";
+            this.ClearButton.Size = new System.Drawing.Size(172, 39);
+            this.ClearButton.TabIndex = 9;
+            this.ClearButton.Text = "Clear";
+            this.ClearButton.UseVisualStyleBackColor = true;
+            // 
+            // AddFilesButton
+            // 
+            this.AddFilesButton.Dock = System.Windows.Forms.DockStyle.Top;
+            this.AddFilesButton.Enabled = false;
+            this.AddFilesButton.FlatAppearance.BorderSize = 0;
+            this.AddFilesButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.AddFilesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
+            this.AddFilesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.AddFilesButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.AddFilesButton.ForeColor = System.Drawing.Color.White;
+            this.AddFilesButton.Location = new System.Drawing.Point(0, 117);
+            this.AddFilesButton.Margin = new System.Windows.Forms.Padding(4);
+            this.AddFilesButton.Name = "AddFilesButton";
+            this.AddFilesButton.Size = new System.Drawing.Size(172, 39);
+            this.AddFilesButton.TabIndex = 8;
+            this.AddFilesButton.Text = "AddFiles";
+            this.AddFilesButton.UseVisualStyleBackColor = true;
+            this.AddFilesButton.Click += new System.EventHandler(this.AddFilesButton_Click);
             // 
             // VersionLabel
             // 
@@ -92,7 +167,8 @@ namespace FileTransfer.Interface
             this.DisconnectButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.DisconnectButton.Enabled = false;
             this.DisconnectButton.FlatAppearance.BorderSize = 0;
-            this.DisconnectButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.DisconnectButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.DisconnectButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.DisconnectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.DisconnectButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.DisconnectButton.ForeColor = System.Drawing.Color.White;
@@ -109,7 +185,8 @@ namespace FileTransfer.Interface
             // 
             this.ClientButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.ClientButton.FlatAppearance.BorderSize = 0;
-            this.ClientButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.ClientButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.ClientButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.ClientButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ClientButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.ClientButton.ForeColor = System.Drawing.Color.White;
@@ -118,15 +195,17 @@ namespace FileTransfer.Interface
             this.ClientButton.Name = "ClientButton";
             this.ClientButton.Size = new System.Drawing.Size(172, 39);
             this.ClientButton.TabIndex = 5;
-            this.ClientButton.Text = "Client";
+            this.ClientButton.Text = "Sender";
             this.ClientButton.UseVisualStyleBackColor = true;
             this.ClientButton.Click += new System.EventHandler(this.ClientButton_Click);
             // 
             // HostButton
             // 
+            this.HostButton.BackColor = System.Drawing.Color.Transparent;
             this.HostButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.HostButton.FlatAppearance.BorderSize = 0;
-            this.HostButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.HostButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.HostButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.HostButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.HostButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.HostButton.ForeColor = System.Drawing.Color.White;
@@ -135,8 +214,8 @@ namespace FileTransfer.Interface
             this.HostButton.Name = "HostButton";
             this.HostButton.Size = new System.Drawing.Size(172, 39);
             this.HostButton.TabIndex = 4;
-            this.HostButton.Text = "Host";
-            this.HostButton.UseVisualStyleBackColor = true;
+            this.HostButton.Text = "Receiver";
+            this.HostButton.UseVisualStyleBackColor = false;
             this.HostButton.Click += new System.EventHandler(this.HostButton_Click);
             // 
             // MainPanel
@@ -146,10 +225,11 @@ namespace FileTransfer.Interface
             this.MainPanel.Controls.Add(this.Table);
             this.MainPanel.Controls.Add(this.TopTable);
             this.MainPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.MainPanel.ForeColor = System.Drawing.Color.White;
             this.MainPanel.Location = new System.Drawing.Point(172, 39);
             this.MainPanel.Margin = new System.Windows.Forms.Padding(4);
             this.MainPanel.Name = "MainPanel";
-            this.MainPanel.Size = new System.Drawing.Size(894, 485);
+            this.MainPanel.Size = new System.Drawing.Size(894, 349);
             this.MainPanel.TabIndex = 2;
             // 
             // Table
@@ -199,7 +279,7 @@ namespace FileTransfer.Interface
             // 
             this.ProgramName.BackColor = System.Drawing.Color.Transparent;
             this.ProgramName.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ProgramName.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProgramName.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ProgramName.ForeColor = System.Drawing.Color.White;
             this.ProgramName.Location = new System.Drawing.Point(0, 0);
             this.ProgramName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -213,7 +293,7 @@ namespace FileTransfer.Interface
             // 
             // TopPanel
             // 
-            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(27)))), ((int)(((byte)(34)))));
+            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(61)))), ((int)(((byte)(107)))));
             this.TopPanel.Controls.Add(this.WindowLabel);
             this.TopPanel.Controls.Add(this.ProgramName);
             this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -240,7 +320,7 @@ namespace FileTransfer.Interface
             // 
             // LogPanel
             // 
-            this.LogPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(27)))), ((int)(((byte)(34)))));
+            this.LogPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(61)))), ((int)(((byte)(107)))));
             this.LogPanel.Controls.Add(this.ShowEventsButton);
             this.LogPanel.Controls.Add(this.EventsLog);
             this.LogPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -253,7 +333,8 @@ namespace FileTransfer.Interface
             // 
             this.ShowEventsButton.Dock = System.Windows.Forms.DockStyle.Left;
             this.ShowEventsButton.FlatAppearance.BorderSize = 0;
-            this.ShowEventsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
+            this.ShowEventsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.ShowEventsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(114)))), ((int)(((byte)(156)))));
             this.ShowEventsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ShowEventsButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.ShowEventsButton.ForeColor = System.Drawing.Color.White;
@@ -268,7 +349,7 @@ namespace FileTransfer.Interface
             // 
             // EventsLog
             // 
-            this.EventsLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(23)))), ((int)(((byte)(31)))));
+            this.EventsLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(99)))), ((int)(((byte)(150)))));
             this.EventsLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.EventsLog.Cursor = System.Windows.Forms.Cursors.Default;
             this.EventsLog.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -281,76 +362,6 @@ namespace FileTransfer.Interface
             this.EventsLog.TabIndex = 0;
             this.EventsLog.Text = "";
             // 
-            // AddFilesButton
-            // 
-            this.AddFilesButton.Dock = System.Windows.Forms.DockStyle.Top;
-            this.AddFilesButton.Enabled = false;
-            this.AddFilesButton.FlatAppearance.BorderSize = 0;
-            this.AddFilesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
-            this.AddFilesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.AddFilesButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
-            this.AddFilesButton.ForeColor = System.Drawing.Color.White;
-            this.AddFilesButton.Location = new System.Drawing.Point(0, 117);
-            this.AddFilesButton.Margin = new System.Windows.Forms.Padding(4);
-            this.AddFilesButton.Name = "AddFilesButton";
-            this.AddFilesButton.Size = new System.Drawing.Size(172, 39);
-            this.AddFilesButton.TabIndex = 8;
-            this.AddFilesButton.Text = "AddFiles";
-            this.AddFilesButton.UseVisualStyleBackColor = true;
-            this.AddFilesButton.Click += new System.EventHandler(this.AddFilesButton_Click);
-            // 
-            // ClearButton
-            // 
-            this.ClearButton.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ClearButton.Enabled = false;
-            this.ClearButton.FlatAppearance.BorderSize = 0;
-            this.ClearButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
-            this.ClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ClearButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
-            this.ClearButton.ForeColor = System.Drawing.Color.White;
-            this.ClearButton.Location = new System.Drawing.Point(0, 156);
-            this.ClearButton.Margin = new System.Windows.Forms.Padding(4);
-            this.ClearButton.Name = "ClearButton";
-            this.ClearButton.Size = new System.Drawing.Size(172, 39);
-            this.ClearButton.TabIndex = 9;
-            this.ClearButton.Text = "Clear";
-            this.ClearButton.UseVisualStyleBackColor = true;
-            // 
-            // SendButton
-            // 
-            this.SendButton.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SendButton.Enabled = false;
-            this.SendButton.FlatAppearance.BorderSize = 0;
-            this.SendButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
-            this.SendButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SendButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
-            this.SendButton.ForeColor = System.Drawing.Color.White;
-            this.SendButton.Location = new System.Drawing.Point(0, 457);
-            this.SendButton.Margin = new System.Windows.Forms.Padding(4);
-            this.SendButton.Name = "SendButton";
-            this.SendButton.Size = new System.Drawing.Size(172, 39);
-            this.SendButton.TabIndex = 10;
-            this.SendButton.Text = "Send";
-            this.SendButton.UseVisualStyleBackColor = true;
-            this.SendButton.Click += new System.EventHandler(this.SendButton_Click);
-            // 
-            // DownloadLabel
-            // 
-            this.DownloadLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.DownloadLabel.FlatAppearance.BorderSize = 0;
-            this.DownloadLabel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(50)))), ((int)(((byte)(64)))));
-            this.DownloadLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.DownloadLabel.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
-            this.DownloadLabel.ForeColor = System.Drawing.Color.White;
-            this.DownloadLabel.Location = new System.Drawing.Point(0, 418);
-            this.DownloadLabel.Margin = new System.Windows.Forms.Padding(4);
-            this.DownloadLabel.Name = "DownloadLabel";
-            this.DownloadLabel.Size = new System.Drawing.Size(172, 39);
-            this.DownloadLabel.TabIndex = 11;
-            this.DownloadLabel.Text = "Download Folder";
-            this.DownloadLabel.UseVisualStyleBackColor = true;
-            this.DownloadLabel.Click += new System.EventHandler(this.DownloadLabel_Click);
-            // 
             // СontextMenuTable
             // 
             this.СontextMenuTable.Name = "СontextMenuTable";
@@ -360,16 +371,19 @@ namespace FileTransfer.Interface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(9)))), ((int)(((byte)(12)))), ((int)(((byte)(16)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(99)))), ((int)(((byte)(150)))));
             this.ClientSize = new System.Drawing.Size(1066, 568);
             this.Controls.Add(this.LogPanel);
             this.Controls.Add(this.MainPanel);
             this.Controls.Add(this.MenuPanel);
             this.Controls.Add(this.TopPanel);
+            this.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ForeColor = System.Drawing.Color.Navy;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "MainForm";
+            this.Text = "File Transfer";
             this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.MenuPanel.ResumeLayout(false);
             this.MainPanel.ResumeLayout(false);

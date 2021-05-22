@@ -60,7 +60,7 @@ namespace FileTransfer.Interface
         {
             MainPanel.Controls.Clear();
             _isServer = true;
-            WindowLabel.Text = "Ctreate host:";
+            WindowLabel.Text = @"Create host:";
 
             string attentionText = "Attention! To create a server you must have:" +
                 "\n1) Static IP Address." +
@@ -69,27 +69,28 @@ namespace FileTransfer.Interface
                 "\n\nIf all these rules are sub-ice, enter the port to connect.";
 
             Button connectButton = FormStyles.InitializeButton("Create", "serverButton", new Point(19, 148), new Size(154, 32));
-            connectButton.Click += new System.EventHandler(StartServerButton_Click);
+            connectButton.Click += StartServerButton_Click;
 
             MainPanel.Controls.AddRange(new Control[] 
             { 
                 connectButton,
                 FormStyles.InitializeTextBox("1234", "portBox", new Point(20, 102), new Size(154, 32), FormStyles.SetFont(12),false,HorizontalAlignment.Center,6),
-                FormStyles.InitializeTextBox(new WebClient().DownloadString("https://api.ipify.org"), "ipAdressBox", new Point(20, 40),
-                new Size(154, 32), FormStyles.SetFont(12), true, HorizontalAlignment.Center, 39),
+                FormStyles.InitializeTextBox(new WebClient().DownloadString("https://api.ipify.org"), "ipAddressBox", new Point(20, 40),
+                    new Size(154, 32), FormStyles.SetFont(12), true, HorizontalAlignment.Center, 39),
                 FormStyles.InitializeLabel("Enter the port:", "portLabel", new Point(10, 74)),
-                FormStyles.InitializeLabel("Here is your IP address:", "ipLabel", new Point(10, 10)),
-                FormStyles.InitializeLabel(attentionText, "attentionLabel", new Point(0,0),ContentAlignment.MiddleLeft, true, null, FormStyles.SetFont(12), Color.Red, null, DockStyle.Bottom)
+                FormStyles.InitializeLabel("Here is your IP address:", "ipLabel", new Point(10, 10))
             });
+
+            MessageBox.Show(attentionText);
         }
         
         private void ClientButton_Click(object sender, EventArgs e)
         {
             MainPanel.Controls.Clear();
             _isServer = false;
-            WindowLabel.Text = "Connection to the host:";
+            WindowLabel.Text = @"Connection to the host:";
 
-            string attentionText = "You have to ask a friend in advance for which ip and port :)";
+            string attentionText = "Tip for you: You have to ask a friend in advance for which ip and port :)";
 
             Button connectButton = FormStyles.InitializeButton("Connect", "connectButton", new Point(19, 148), new Size(154, 32));
             connectButton.Click += new System.EventHandler(ConnectButton_Click);
