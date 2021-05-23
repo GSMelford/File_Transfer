@@ -13,30 +13,15 @@ namespace FileTransfer.Interface.Settings
         private readonly TableLayoutPanel _table;
         private ContextMenuStrip _menu;
         private const int HeightRow = 50;
+        private int _rowCapacity = 50;
         private int _nowLoad = 1;
         
         public TableControl(TableLayoutPanel topTable, TableLayoutPanel table, ContextMenuStrip contextMenu)
         {
             _topTable = topTable;
             _table = table;
+            _table.Size = new Size(0, HeightRow * _rowCapacity);
             _menu = contextMenu;
-        }
-        
-        private static void RemoveItem_Click(object sender, EventArgs e)
-        {
-            if (!(sender is ToolStripMenuItem label)) return;
-            
-            int index = label.Name.LastIndexOf('_');
-            
-            string number = string.Empty;
-            
-            for (int i = index+1; i < label.Name.Length; i++)
-                number += label.Name[i];
-            
-            if (int.TryParse(number, out int num))
-            {
-                //TODO Remove row
-            }
         }
         
         public TableLayoutPanel GetTopTable() => _topTable;
@@ -76,16 +61,14 @@ namespace FileTransfer.Interface.Settings
                FormStyles.InitializeLabel("00:00:00.00", $"time_{_table.RowCount}", new Point(0, 0))
             });
 
-            ContextMenuStrip menu = new ContextMenuStrip();
-            ToolStripMenuItem removeItem = new ToolStripMenuItem("Remove") {Name = $"remove_{_table.RowCount}"};
-            menu.Items.Add(removeItem);
-            removeItem.Click += RemoveItem_Click;
-
-            _table.Controls[$"fileName_{_table.RowCount}"].ContextMenuStrip = menu;
-            
             _table.RowCount++;
             _table.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
-            _table.Size = new Size(0, HeightRow * _table.RowCount);
+            
+            if (_table.RowCount == _rowCapacity)
+            {
+                _rowCapacity *= 2;
+                _table.Size = new Size(0, HeightRow * _rowCapacity);
+            }
         }
         
         public void UpdateTable(NetworkConnectionArgs args)
