@@ -57,7 +57,7 @@ namespace FileTransfer.Interface
             // 
             // MenuPanel
             // 
-            this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (100)))), ((int) (((byte) (89)))), ((int) (((byte) (156)))));
+            this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(89)))), ((int)(((byte)(156)))));
             this.MenuPanel.Controls.Add(this.DownloadButton);
             this.MenuPanel.Controls.Add(this.SendButton);
             this.MenuPanel.Controls.Add(this.AddFilesButton);
@@ -76,8 +76,8 @@ namespace FileTransfer.Interface
             // 
             this.DownloadButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.DownloadButton.FlatAppearance.BorderSize = 0;
-            this.DownloadButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.DownloadButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (125)))), ((int) (((byte) (114)))), ((int) (((byte) (181)))));
+            this.DownloadButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.DownloadButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.DownloadButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.DownloadButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.DownloadButton.ForeColor = System.Drawing.Color.White;
@@ -95,8 +95,8 @@ namespace FileTransfer.Interface
             this.SendButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.SendButton.Enabled = false;
             this.SendButton.FlatAppearance.BorderSize = 0;
-            this.SendButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.SendButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (125)))), ((int) (((byte) (114)))), ((int) (((byte) (181)))));
+            this.SendButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.SendButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.SendButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SendButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.SendButton.ForeColor = System.Drawing.Color.White;
@@ -114,8 +114,8 @@ namespace FileTransfer.Interface
             this.AddFilesButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.AddFilesButton.Enabled = false;
             this.AddFilesButton.FlatAppearance.BorderSize = 0;
-            this.AddFilesButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.AddFilesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (125)))), ((int) (((byte) (114)))), ((int) (((byte) (181)))));
+            this.AddFilesButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.AddFilesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.AddFilesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.AddFilesButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.AddFilesButton.ForeColor = System.Drawing.Color.White;
@@ -139,7 +139,7 @@ namespace FileTransfer.Interface
             this.VersionLabel.Name = "VersionLabel";
             this.VersionLabel.Size = new System.Drawing.Size(172, 33);
             this.VersionLabel.TabIndex = 7;
-            this.VersionLabel.Text = "Version 0.9.1";
+            this.VersionLabel.Text = "Version 1.0.1";
             this.VersionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // DisconnectButton
@@ -147,8 +147,8 @@ namespace FileTransfer.Interface
             this.DisconnectButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.DisconnectButton.Enabled = false;
             this.DisconnectButton.FlatAppearance.BorderSize = 0;
-            this.DisconnectButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.DisconnectButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (125)))), ((int) (((byte) (114)))), ((int) (((byte) (181)))));
+            this.DisconnectButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.DisconnectButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.DisconnectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.DisconnectButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.DisconnectButton.ForeColor = System.Drawing.Color.White;
@@ -165,8 +165,8 @@ namespace FileTransfer.Interface
             // 
             this.ClientButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.ClientButton.FlatAppearance.BorderSize = 0;
-            this.ClientButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.ClientButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (125)))), ((int) (((byte) (114)))), ((int) (((byte) (181)))));
+            this.ClientButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.ClientButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.ClientButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ClientButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.ClientButton.ForeColor = System.Drawing.Color.White;
@@ -181,11 +181,11 @@ namespace FileTransfer.Interface
             // 
             // HostButton
             // 
-            this.HostButton.BackColor = System.Drawing.Color.Transparent;
+            this.HostButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(89)))), ((int)(((byte)(156)))));
             this.HostButton.Dock = System.Windows.Forms.DockStyle.Top;
             this.HostButton.FlatAppearance.BorderSize = 0;
-            this.HostButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.HostButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (125)))), ((int) (((byte) (114)))), ((int) (((byte) (181)))));
+            this.HostButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.HostButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
             this.HostButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.HostButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.HostButton.ForeColor = System.Drawing.Color.White;
@@ -259,7 +259,7 @@ namespace FileTransfer.Interface
             // 
             this.ProgramName.BackColor = System.Drawing.Color.Transparent;
             this.ProgramName.Dock = System.Windows.Forms.DockStyle.Left;
-            this.ProgramName.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.ProgramName.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ProgramName.ForeColor = System.Drawing.Color.White;
             this.ProgramName.Location = new System.Drawing.Point(0, 0);
             this.ProgramName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -273,7 +273,7 @@ namespace FileTransfer.Interface
             // 
             // TopPanel
             // 
-            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (69)))), ((int) (((byte) (61)))), ((int) (((byte) (107)))));
+            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(61)))), ((int)(((byte)(107)))));
             this.TopPanel.Controls.Add(this.WindowLabel);
             this.TopPanel.Controls.Add(this.ProgramName);
             this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -289,7 +289,7 @@ namespace FileTransfer.Interface
             // 
             this.WindowLabel.BackColor = System.Drawing.Color.Transparent;
             this.WindowLabel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.WindowLabel.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.WindowLabel.Font = new System.Drawing.Font("Calibri", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WindowLabel.ForeColor = System.Drawing.Color.White;
             this.WindowLabel.Location = new System.Drawing.Point(172, 0);
             this.WindowLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
@@ -300,7 +300,7 @@ namespace FileTransfer.Interface
             // 
             // LogPanel
             // 
-            this.LogPanel.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (69)))), ((int) (((byte) (61)))), ((int) (((byte) (107)))));
+            this.LogPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(61)))), ((int)(((byte)(107)))));
             this.LogPanel.Controls.Add(this.ShowEventsButton);
             this.LogPanel.Controls.Add(this.EventsLog);
             this.LogPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -313,8 +313,8 @@ namespace FileTransfer.Interface
             // 
             this.ShowEventsButton.Dock = System.Windows.Forms.DockStyle.Left;
             this.ShowEventsButton.FlatAppearance.BorderSize = 0;
-            this.ShowEventsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.ShowEventsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (120)))), ((int) (((byte) (114)))), ((int) (((byte) (156)))));
+            this.ShowEventsButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.ShowEventsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(114)))), ((int)(((byte)(156)))));
             this.ShowEventsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ShowEventsButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
             this.ShowEventsButton.ForeColor = System.Drawing.Color.White;
@@ -329,11 +329,11 @@ namespace FileTransfer.Interface
             // 
             // EventsLog
             // 
-            this.EventsLog.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (108)))), ((int) (((byte) (99)))), ((int) (((byte) (150)))));
+            this.EventsLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(99)))), ((int)(((byte)(150)))));
             this.EventsLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.EventsLog.Cursor = System.Windows.Forms.Cursors.Default;
             this.EventsLog.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.EventsLog.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.EventsLog.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.EventsLog.ForeColor = System.Drawing.Color.White;
             this.EventsLog.Location = new System.Drawing.Point(0, 32);
             this.EventsLog.Name = "EventsLog";
@@ -352,15 +352,15 @@ namespace FileTransfer.Interface
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (108)))), ((int) (((byte) (99)))), ((int) (((byte) (150)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(99)))), ((int)(((byte)(150)))));
             this.ClientSize = new System.Drawing.Size(1066, 568);
             this.Controls.Add(this.LogPanel);
             this.Controls.Add(this.MainPanel);
             this.Controls.Add(this.MenuPanel);
             this.Controls.Add(this.TopPanel);
-            this.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.Font = new System.Drawing.Font("Calibri", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Navy;
-            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -374,6 +374,7 @@ namespace FileTransfer.Interface
             this.TopPanel.ResumeLayout(false);
             this.LogPanel.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.Button DownloadButton;
