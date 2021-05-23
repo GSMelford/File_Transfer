@@ -34,7 +34,6 @@ namespace FileTransfer.Interface
             this.MenuPanel = new System.Windows.Forms.Panel();
             this.DownloadButton = new System.Windows.Forms.Button();
             this.SendButton = new System.Windows.Forms.Button();
-            this.ClearButton = new System.Windows.Forms.Button();
             this.AddFilesButton = new System.Windows.Forms.Button();
             this.VersionLabel = new System.Windows.Forms.Label();
             this.DisconnectButton = new System.Windows.Forms.Button();
@@ -61,7 +60,6 @@ namespace FileTransfer.Interface
             this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (100)))), ((int) (((byte) (89)))), ((int) (((byte) (156)))));
             this.MenuPanel.Controls.Add(this.DownloadButton);
             this.MenuPanel.Controls.Add(this.SendButton);
-            this.MenuPanel.Controls.Add(this.ClearButton);
             this.MenuPanel.Controls.Add(this.AddFilesButton);
             this.MenuPanel.Controls.Add(this.VersionLabel);
             this.MenuPanel.Controls.Add(this.DisconnectButton);
@@ -110,24 +108,6 @@ namespace FileTransfer.Interface
             this.SendButton.Text = "Send";
             this.SendButton.UseVisualStyleBackColor = true;
             this.SendButton.Click += new System.EventHandler(this.SendButton_Click);
-            // 
-            // ClearButton
-            // 
-            this.ClearButton.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ClearButton.Enabled = false;
-            this.ClearButton.FlatAppearance.BorderSize = 0;
-            this.ClearButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (155)))), ((int) (((byte) (143)))), ((int) (((byte) (219)))));
-            this.ClearButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int) (((byte) (125)))), ((int) (((byte) (114)))), ((int) (((byte) (181)))));
-            this.ClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ClearButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
-            this.ClearButton.ForeColor = System.Drawing.Color.White;
-            this.ClearButton.Location = new System.Drawing.Point(0, 156);
-            this.ClearButton.Margin = new System.Windows.Forms.Padding(4);
-            this.ClearButton.Name = "ClearButton";
-            this.ClearButton.Size = new System.Drawing.Size(172, 39);
-            this.ClearButton.TabIndex = 9;
-            this.ClearButton.Text = "Clear";
-            this.ClearButton.UseVisualStyleBackColor = true;
             // 
             // AddFilesButton
             // 
@@ -229,7 +209,7 @@ namespace FileTransfer.Interface
             this.MainPanel.Location = new System.Drawing.Point(172, 39);
             this.MainPanel.Margin = new System.Windows.Forms.Padding(4);
             this.MainPanel.Name = "MainPanel";
-            this.MainPanel.Size = new System.Drawing.Size(894, 349);
+            this.MainPanel.Size = new System.Drawing.Size(894, 142);
             this.MainPanel.TabIndex = 2;
             // 
             // Table
@@ -369,6 +349,7 @@ namespace FileTransfer.Interface
             // 
             // MainForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (108)))), ((int) (((byte) (99)))), ((int) (((byte) (150)))));
@@ -384,6 +365,9 @@ namespace FileTransfer.Interface
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "File Transfer";
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
+            this.DragLeave += new System.EventHandler(this.MainForm_DragLeave);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.MenuPanel.ResumeLayout(false);
             this.MainPanel.ResumeLayout(false);
@@ -410,7 +394,6 @@ namespace FileTransfer.Interface
         private System.Windows.Forms.RichTextBox EventsLog;
         private System.Windows.Forms.Button ShowEventsButton;
         private System.Windows.Forms.Button SendButton;
-        private System.Windows.Forms.Button ClearButton;
         private System.Windows.Forms.Button AddFilesButton;
         private System.Windows.Forms.ContextMenuStrip СontextMenuTable;
     }

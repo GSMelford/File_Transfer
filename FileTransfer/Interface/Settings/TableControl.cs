@@ -14,7 +14,7 @@ namespace FileTransfer.Interface.Settings
         private ContextMenuStrip _menu;
         private const int HeightRow = 50;
         private int _rowCapacity = 50;
-        private int _nowLoad = 1;
+        public int NowLoad = 1;
         
         public TableControl(TableLayoutPanel topTable, TableLayoutPanel table, ContextMenuStrip contextMenu)
         {
@@ -61,8 +61,9 @@ namespace FileTransfer.Interface.Settings
                FormStyles.InitializeLabel("00:00:00.00", $"time_{_table.RowCount}", new Point(0, 0))
             });
 
-            _table.RowCount++;
+            
             _table.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            _table.RowCount++;
             
             if (_table.RowCount == _rowCapacity)
             {
@@ -73,18 +74,14 @@ namespace FileTransfer.Interface.Settings
         
         public void UpdateTable(NetworkConnectionArgs args)
         {
-            ProgressBar progressBar = (ProgressBar)_table.Controls[$"progressBar_{_nowLoad}"];
+            ProgressBar progressBar = (ProgressBar)_table.Controls[$"progressBar_{NowLoad}"];
             progressBar.Value = (int)((args.CurrentLength * 100) / args.FileLength);
-            _table.Controls[$"percent_{_nowLoad}"].Text = string.Format($"{(int)((args.CurrentLength * 100) / args.FileLength)} %");
-            _table.Controls[$"speed_{_nowLoad}"].Text = $@"{args.Speed / 1000000:F2} MB/s";
-            _table.Controls[$"size_{_nowLoad}"].Text =
+            _table.Controls[$"percent_{NowLoad}"].Text = string.Format($"{(int)((args.CurrentLength * 100) / args.FileLength)} %");
+            _table.Controls[$"speed_{NowLoad}"].Text = $@"{args.Speed / 1000000:F2} MB/s";
+            _table.Controls[$"size_{NowLoad}"].Text =
                 $@"{args.CurrentLength / 1000:f2} KB/ {args.FileLength / 1000:f2} KB";
-            _table.Controls[$"time_{_nowLoad}"].Text =
+            _table.Controls[$"time_{NowLoad}"].Text =
                 $@"{args.Time.Hours:00}:{args.Time.Minutes:00}:{args.Time.Seconds:00}.{args.Time.Milliseconds / 10:00}";
-
-            if ((int)(args.CurrentLength * 100 / args.FileLength) == 100)
-                _nowLoad++;
         }
-        
     }
 }

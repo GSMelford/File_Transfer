@@ -126,25 +126,9 @@ namespace FileTransfer.Network
                 //Получаем файл
                 long bufferSize;
                 int updateTick = 1;
-                int checkConnect = 0;
                 FileHandler.FileStream = new FileStream($@"{FileHandler.DownloadPath}\{fileInfo.Name}", FileMode.Append);
                 for (long i = 0; i < fileInfo.Length; i += bufferSize)
                 {
-                    if (_client.Available == 0)
-                    {
-                        Notify?.Invoke(checkConnect.ToString());
-                        checkConnect++;
-                    }
-                    else
-                    {
-                        checkConnect = 0;
-                    }
-
-                    if (checkConnect == 50)
-                    {
-                        return false;
-                    }
-                    
                     bufferSize = _client.Available;
 
                     if (fileInfo.Length - i - bufferSize < 0)

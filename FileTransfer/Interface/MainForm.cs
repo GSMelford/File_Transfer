@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FileTransfer.FileWorker;
 using FileTransfer.Interface.Settings;
 using FileTransfer.Network;
+using FileInfo = System.IO.FileInfo;
 
 namespace FileTransfer.Interface
 {
@@ -14,9 +16,9 @@ namespace FileTransfer.Interface
     {
         private Point _mousePoint;
         
-        private bool _isServer;
-        
         private bool _showLog = true;
+
+        private bool _dropEnabled;
         
         private readonly TableControl _tableControl;
 
@@ -42,32 +44,37 @@ namespace FileTransfer.Interface
         
         private void UpdateTableHandler(NetworkConnectionArgs args)
         {
-            Invoke((Action)(() => { _tableControl.UpdateTable(args); }));
+            Invoke((Action)(() =>
+            {
+                _tableControl.UpdateTable(args);
+            }));
         }
 
         private void AddLog(string message)
         {
             try
             {
-                Invoke((Action)(() => { EventsLog.Text += $"[{DateTime.Now.ToShortTimeString()}] {message}\r\n"; }));
+                Invoke((Action)(() =>
+                {
+                    EventsLog.Text += $"[{DateTime.Now.ToShortTimeString()}] {message}\r\n";
+                }));
             }
-            catch (Exception)
+            catch
             {
-                return;
+                // ignored
             }
         }
         
         private void HostButton_Click(object sender, EventArgs e)
         {
             MainPanel.Controls.Clear();
-            _isServer = true;
             WindowLabel.Text = @"Create host:";
 
-            string attentionText = "Attention! To create a server you must have:" +
-                "\n1) Static IP Address." +
-                "\n2) The port passed through the router(if you use it)." +
-                "\n3) Your computer must be connected to the network via a cable." +
-                "\n\nIf all these rules are sub-ice, enter the port to connect.";
+            const string attentionText = "To create a server you must have:" +
+                                         "\n1) Static IP Address." +
+                                         "\n2) The port passed through the router(if you use it)." +
+                                         "\n3) Your computer must be connected to the network via a cable." +
+                                         "\n\nIf all these rules are sub-ice, enter the port to connect.";
 
             Button connectButton = FormStyles.InitializeButton("Create", "serverButton", new Point(19, 148), new Size(154, 32));
             connectButton.Click += StartServerButton_Click;
@@ -82,19 +89,18 @@ namespace FileTransfer.Interface
                 FormStyles.InitializeLabel("Here is your IP address:", "ipLabel", new Point(10, 10))
             });
 
-            MessageBox.Show(attentionText);
+            MessageBox.Show(attentionText, "Attention!");
         }
         
         private void ClientButton_Click(object sender, EventArgs e)
         {
             MainPanel.Controls.Clear();
-            _isServer = false;
             WindowLabel.Text = @"Connection to the host:";
 
             string attentionText = "Tip for you: You have to ask a friend in advance for which ip and port :)";
 
             Button connectButton = FormStyles.InitializeButton("Connect", "connectButton", new Point(19, 148), new Size(154, 32));
-            connectButton.Click += new System.EventHandler(ConnectButton_Click);
+            connectButton.Click += ConnectButton_Click;
 
             MainPanel.Controls.AddRange(new Control[]
             {
@@ -108,18 +114,27 @@ namespace FileTransfer.Interface
             });
         }  
         
-        private void SetButtonsEnabled(bool hostButton, bool clientButton, bool disconnectButton, bool receiveButton)
+        private void SetButtonsEnabled(
+            bool hostButton = false, 
+            bool clientButton = false, 
+            bool disconnectButton = false,
+            bool addFilesButton = false,
+            bool downloadButton = false,
+            bool sendButton = false)
         {
             Invoke((Action)(() => {
                 HostButton.Enabled = hostButton;
                 ClientButton.Enabled = clientButton;
                 DisconnectButton.Enabled = disconnectButton;
+                AddFilesButton.Enabled = addFilesButton;
+                DownloadButton.Enabled = downloadButton;
+                SendButton.Enabled = sendButton;
             }));
         }
         
         private async void StartServerButton_Click(object sender, EventArgs e)
         {
-            SetButtonsEnabled(false, false, false,false);
+            SetButtonsEnabled();
             if (MainPanel.Controls["serverButton"] != null)
             {
                 MainPanel.Controls["serverButton"].Enabled = false;
@@ -133,7 +148,7 @@ namespace FileTransfer.Interface
                     ShowEventsButton_Click(null, null);
                     Notify?.Invoke("Invalid value in the port field.");
 
-                    SetButtonsEnabled(true, true, false,false);
+                    SetButtonsEnabled(true, true);
                     MainPanel.Controls["serverButton"].Enabled = true;
 
                     return;
@@ -141,15 +156,21 @@ namespace FileTransfer.Interface
 
                 if (!NetworkConnection.StartServer(port) || !NetworkConnection.AcceptClient())
                 {
-                    SetButtonsEnabled(true, true, false,false);
+                    SetButtonsEnabled(true, true);
                     MainPanel.Controls["serverButton"].Enabled = true;
                     return;
                 }
 
                 new Task(ReceiveFiles).Start();
+                
                 CreateTables();
-                SetButtonsEnabled(false, false, true,true);
+                
                 Invoke((Action)(() => { WindowLabel.Text = "Received files:"; }));
+                
+                SetButtonsEnabled(
+                    false, false,
+                    true,false,
+                    true);
             });
         }
         
@@ -164,12 +185,14 @@ namespace FileTransfer.Interface
                         "Oops...");
                     Environment.Exit(0);
                 }
+
+                _tableControl.NowLoad++;
             }
         }
         
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            SetButtonsEnabled(false, false, false, false);
+            SetButtonsEnabled();
             MainPanel.Controls["connectButton"].Enabled = false;
 
             if (!int.TryParse(MainPanel.Controls["portBox"].Text, out int port))
@@ -178,7 +201,7 @@ namespace FileTransfer.Interface
                 ShowEventsButton_Click(null, null);
                 Notify?.Invoke("Invalid value in the port field.");
 
-                SetButtonsEnabled(true, true, false,false);
+                SetButtonsEnabled(true, true);
                 MainPanel.Controls["connectButton"].Enabled = true;
 
                 return;
@@ -186,13 +209,20 @@ namespace FileTransfer.Interface
 
             if (!NetworkConnection.ConnectToServer(MainPanel.Controls["ipAdressBox"].Text, port))
             {
-                SetButtonsEnabled(true, true, false,false);
+                SetButtonsEnabled(true, true);
                 MainPanel.Controls["connectButton"].Enabled = true;
                 return;
             }
+            
             CreateTables();
-            SetButtonsEnabled(false, false, true,false);
+            
             Invoke((Action)(() => { WindowLabel.Text = "Files sent:"; }));
+            
+            SetButtonsEnabled(
+                false, false, 
+                true,true, 
+                false, true);
+            _dropEnabled = true;
         }
         
         private void CreateTables()
@@ -202,23 +232,13 @@ namespace FileTransfer.Interface
                 MainPanel.Controls.Clear();
                 MainPanel.Controls.AddRange(new Control[] { _tableControl.GetTable(), _tableControl.GetTopTable() });
                 _tableControl.FillTopTable();
-                if (!_isServer)
-                {
-                    AddFilesButton.Enabled = true;
-                    SendButton.Enabled = true;
-                    ClearButton.Enabled = true;
-                }
             }));
         }
         
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
             NetworkConnection.Disconnect();
-            MainPanel.Controls.Clear();
-            SetButtonsEnabled(true, true, true,false);
-            AddFilesButton.Enabled = false;
-            SendButton.Enabled = false;
-            ClearButton.Enabled = false;
+            Environment.Exit(0);
         }
         
         private void TopPanel_MouseDown(object sender, MouseEventArgs e)
@@ -275,10 +295,12 @@ namespace FileTransfer.Interface
         
         private void AddFilesButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog file = new OpenFileDialog();
-            file.Multiselect = true;
-            file.Title = "Select file:";
-            file.InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}";
+            OpenFileDialog file = new OpenFileDialog
+            {
+                Multiselect = true,
+                Title = "Select file:",
+                InitialDirectory = $"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}"
+            };
             if (file.ShowDialog() != DialogResult.OK) return;
             foreach (var path in file.FileNames)
             {
@@ -290,6 +312,7 @@ namespace FileTransfer.Interface
         
         private async void SendButton_Click(object sender, EventArgs e)
         {
+            SetButtonsEnabled(false,false,true);
             await Task.Run(() =>
             {
                 foreach (KeyValuePair<string,string> path in FileHandler.GetFilePaths())
@@ -302,9 +325,13 @@ namespace FileTransfer.Interface
                         NetworkConnection.TryConnectToServer();
                         goto StartPosition;
                     }
+                    _tableControl.NowLoad++;
                 }
                 FileHandler.GetFilePaths().Clear();
             });
+            SetButtonsEnabled(false,false,
+                true, true,
+                false,true);
         }
         
         private void AddReceiveFile(string fileName)
@@ -321,5 +348,48 @@ namespace FileTransfer.Interface
             }
         }
 
+        private void MainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (_dropEnabled)
+            {
+                if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                {
+                    BackColor = Color.Coral;
+                    e.Effect = DragDropEffects.Copy;
+                }
+            }
+                
+        }
+
+        private void MainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            if (_dropEnabled)
+            {
+                foreach (string obj in (string[])e.Data.GetData(DataFormats.FileDrop))
+                {
+                    if (Directory.Exists(obj))
+                    {
+                        foreach (var path in Directory.GetFiles(obj,".",SearchOption.AllDirectories))
+                        {
+                            FileInfo fileInfo = new FileInfo(path);
+                            FileHandler.AddFilePath(fileInfo.Name, path);
+                            _tableControl.AddRow(fileInfo.Name, fileInfo.Length);
+                        }
+                    }
+                    else
+                    {
+                        FileInfo fileInfo = new FileInfo(obj);
+                        FileHandler.AddFilePath(fileInfo.Name, obj);
+                        _tableControl.AddRow(fileInfo.Name, fileInfo.Length);
+                    }
+                }
+                BackColor = Color.FromArgb(108, 99, 150);
+            }
+        }
+
+        private void MainForm_DragLeave(object sender, EventArgs e)
+        {
+            BackColor = Color.FromArgb(108, 99, 150);
+        }
     }
 }
