@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,6 +17,10 @@ namespace FileTransfer.Interface
         private bool _isServer;
         
         private bool _showLog = true;
+
+        private bool _canReceive = true;
+
+        private int _port;
         
         private readonly TableControl _tableControl;
 
@@ -107,29 +112,31 @@ namespace FileTransfer.Interface
             });
         }  
         
-        private void SetButtonsEnabled(bool hostButton, bool clientButton, bool disconnectButton)
+        private void SetButtonsEnabled(bool hostButton, bool clientButton, bool disconnectButton, bool receiveButton)
         {
             Invoke((Action)(() => {
                 HostButton.Enabled = hostButton;
                 ClientButton.Enabled = clientButton;
                 DisconnectButton.Enabled = disconnectButton;
+                ReceiveButton.Enabled = receiveButton;
             }));
         }
         
         private async void StartServerButton_Click(object sender, EventArgs e)
         {
-            SetButtonsEnabled(false, false, false);
+            SetButtonsEnabled(false, false, false,false);
             MainPanel.Controls["serverButton"].Enabled = false;
 
             await Task.Run(() =>
             {
                 if (!int.TryParse(MainPanel.Controls["portBox"].Text, out int port))
                 {
+                    _port = port;
                     _showLog = true;
                     ShowEventsButton_Click(null, null);
                     Notify?.Invoke("Invalid value in the port field.");
 
-                    SetButtonsEnabled(true, true, false);
+                    SetButtonsEnabled(true, true, false,false);
                     MainPanel.Controls["serverButton"].Enabled = true;
 
                     return;
@@ -137,20 +144,25 @@ namespace FileTransfer.Interface
 
                 if (!NetworkConnection.StartServer(port) || !NetworkConnection.AcceptClient())
                 {
-                    SetButtonsEnabled(true, true, false);
+                    SetButtonsEnabled(true, true, false,false);
                     MainPanel.Controls["serverButton"].Enabled = true;
                     return;
                 }
 
                 CreateTables();
-                SetButtonsEnabled(false, false, true);
+                SetButtonsEnabled(false, false, true,true);
                 Invoke((Action)(() => { WindowLabel.Text = "Received files:"; }));
             });
         }
+
+        private void ReceiveButton_Click(object sender, EventArgs e)
+        {
+        }
+        
         
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-            SetButtonsEnabled(false, false, false);
+            SetButtonsEnabled(false, false, false, false);
             MainPanel.Controls["connectButton"].Enabled = false;
 
             if (!int.TryParse(MainPanel.Controls["portBox"].Text, out int port))
@@ -159,7 +171,7 @@ namespace FileTransfer.Interface
                 ShowEventsButton_Click(null, null);
                 Notify?.Invoke("Invalid value in the port field.");
 
-                SetButtonsEnabled(true, true, false);
+                SetButtonsEnabled(true, true, false,false);
                 MainPanel.Controls["connectButton"].Enabled = true;
 
                 return;
@@ -167,12 +179,12 @@ namespace FileTransfer.Interface
 
             if (!NetworkConnection.ConnectToServer(MainPanel.Controls["ipAdressBox"].Text, port))
             {
-                SetButtonsEnabled(true, true, false);
+                SetButtonsEnabled(true, true, false,false);
                 MainPanel.Controls["connectButton"].Enabled = true;
                 return;
             }
             CreateTables();
-            SetButtonsEnabled(false, false, true);
+            SetButtonsEnabled(false, false, true,false);
             Invoke((Action)(() => { WindowLabel.Text = "Files sent:"; }));
         }
         
@@ -196,7 +208,7 @@ namespace FileTransfer.Interface
         {
             NetworkConnection.Disconnect();
             MainPanel.Controls.Clear();
-            SetButtonsEnabled(true, true, true);
+            SetButtonsEnabled(true, true, true,false);
             AddFilesButton.Enabled = false;
             SendButton.Enabled = false;
             ClearButton.Enabled = false;
@@ -273,9 +285,16 @@ namespace FileTransfer.Interface
         {
             await Task.Run(() =>
             {
-                foreach (var path in FileHandler.GetFilePaths())
+                foreach (KeyValuePair<string,string> path in FileHandler.GetFilePaths())
                 {
-                    NetworkConnection.SendFiles(path.Value);
+                    StartPosition:
+                    if (!NetworkConnection.SendFiles(path.Value))
+                    {
+                        MessageBox.Show("We have lost contact with the client. We are waiting for reconnection.",
+                            "Oops...");
+                        NetworkConnection.TryConnectToServer();
+                        goto StartPosition;
+                    }
                 }
                 FileHandler.GetFilePaths().Clear();
             });
@@ -294,6 +313,7 @@ namespace FileTransfer.Interface
                 FileHandler.DownloadPath = folderBrowser.SelectedPath;
             }
         }
+
         
     }
 }

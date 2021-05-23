@@ -92,7 +92,7 @@ namespace FileTransfer.Interface.Settings
         {
             ProgressBar progressBar = (ProgressBar)_table.Controls[$"progressBar_{_nowLoad}"];
             progressBar.Value = (int)((args.CurrentLength * 100) / args.FileLength);
-            _table.Controls[$"percent_{_nowLoad}"].Text = string.Format($@"{(int)(args.CurrentLength * 100) / args.FileLength} %");
+            _table.Controls[$"percent_{_nowLoad}"].Text = string.Format($"{(int)((args.CurrentLength * 100) / args.FileLength)} %");
             _table.Controls[$"speed_{_nowLoad}"].Text = $@"{args.Speed / 1000000:F2} MB/s";
             _table.Controls[$"size_{_nowLoad}"].Text =
                 $@"{args.CurrentLength / 1000:f2} KB/ {args.FileLength / 1000:f2} KB";

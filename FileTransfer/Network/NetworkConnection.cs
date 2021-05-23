@@ -86,6 +86,13 @@ namespace FileTransfer.Network
                 return false;
             }
         }
+
+        public static void TryConnectToServer()
+        {
+            while (!ConnectToServer(_ipServer, _port))
+            {
+            }
+        }
         
         public static void Disconnect()
         {
@@ -125,6 +132,7 @@ namespace FileTransfer.Network
 
                     //Получаем файл
                     long bufferSize;
+                    int updateTick = 1;
                     FileHandler.FileStream = new FileStream($@"{FileHandler.DownloadPath}\{fileInfo.Name}", FileMode.Append);
                     for (long i = 0; i < fileInfo.Length; i += bufferSize)
                     {
@@ -144,10 +152,18 @@ namespace FileTransfer.Network
                         byteLoad += bufferSize;
 
                         DownloadOrLoad?.Invoke(fileInfo.Length, byteLoad);
-                        DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
-                            fileInfo.Length, speed, byteLoad, watch.Elapsed));
+
+                        if (watch.Elapsed.Seconds >= updateTick)
+                        {
+                            updateTick++;
+                            DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
+                                fileInfo.Length, speed, byteLoad, watch.Elapsed));
+                        }
                     }
 
+                    DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
+                        fileInfo.Length, speed, byteLoad, watch.Elapsed));
+                    
                     //Закрываем потоки чтения файла 
                     FileHandler.FileStream.Close();
                     FileHandler.FileStream.Dispose();
@@ -165,7 +181,7 @@ namespace FileTransfer.Network
             }
         }
         
-        public static void SendFiles(string path)
+        public static bool SendFiles(string path)
         {
             try
             {
@@ -232,13 +248,13 @@ namespace FileTransfer.Network
             catch (Exception)
             {
                 Notify?.Invoke($"Failed to send file.");
+                return false;
             }
+            return true;
         }
         
         private static void Speedometer(long fileLength, ref long speed, ref long byteLoad)
         {
-            if (speed <= 0) throw new ArgumentOutOfRangeException(nameof(speed));
-            
             long oldByte = 0;
             
             while (true)

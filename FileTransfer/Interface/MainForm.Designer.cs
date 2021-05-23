@@ -32,7 +32,8 @@ namespace FileTransfer.Interface
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.MenuPanel = new System.Windows.Forms.Panel();
-            this.DownloadLabel = new System.Windows.Forms.Button();
+            this.ReceiveButton = new System.Windows.Forms.Button();
+            this.DownloadButton = new System.Windows.Forms.Button();
             this.SendButton = new System.Windows.Forms.Button();
             this.ClearButton = new System.Windows.Forms.Button();
             this.AddFilesButton = new System.Windows.Forms.Button();
@@ -59,7 +60,8 @@ namespace FileTransfer.Interface
             // MenuPanel
             // 
             this.MenuPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(89)))), ((int)(((byte)(156)))));
-            this.MenuPanel.Controls.Add(this.DownloadLabel);
+            this.MenuPanel.Controls.Add(this.ReceiveButton);
+            this.MenuPanel.Controls.Add(this.DownloadButton);
             this.MenuPanel.Controls.Add(this.SendButton);
             this.MenuPanel.Controls.Add(this.ClearButton);
             this.MenuPanel.Controls.Add(this.AddFilesButton);
@@ -74,23 +76,42 @@ namespace FileTransfer.Interface
             this.MenuPanel.Size = new System.Drawing.Size(172, 529);
             this.MenuPanel.TabIndex = 1;
             // 
-            // DownloadLabel
+            // ReceiveButton
             // 
-            this.DownloadLabel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.DownloadLabel.FlatAppearance.BorderSize = 0;
-            this.DownloadLabel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
-            this.DownloadLabel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
-            this.DownloadLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.DownloadLabel.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
-            this.DownloadLabel.ForeColor = System.Drawing.Color.White;
-            this.DownloadLabel.Location = new System.Drawing.Point(0, 418);
-            this.DownloadLabel.Margin = new System.Windows.Forms.Padding(4);
-            this.DownloadLabel.Name = "DownloadLabel";
-            this.DownloadLabel.Size = new System.Drawing.Size(172, 39);
-            this.DownloadLabel.TabIndex = 11;
-            this.DownloadLabel.Text = "Download Folder";
-            this.DownloadLabel.UseVisualStyleBackColor = true;
-            this.DownloadLabel.Click += new System.EventHandler(this.DownloadLabel_Click);
+            this.ReceiveButton.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.ReceiveButton.Enabled = false;
+            this.ReceiveButton.FlatAppearance.BorderSize = 0;
+            this.ReceiveButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.ReceiveButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
+            this.ReceiveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ReceiveButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.ReceiveButton.ForeColor = System.Drawing.Color.White;
+            this.ReceiveButton.Location = new System.Drawing.Point(0, 379);
+            this.ReceiveButton.Margin = new System.Windows.Forms.Padding(4);
+            this.ReceiveButton.Name = "ReceiveButton";
+            this.ReceiveButton.Size = new System.Drawing.Size(172, 39);
+            this.ReceiveButton.TabIndex = 12;
+            this.ReceiveButton.Text = "Receive";
+            this.ReceiveButton.UseVisualStyleBackColor = true;
+            this.ReceiveButton.Click += new System.EventHandler(this.ReceiveButton_Click);
+            // 
+            // DownloadButton
+            // 
+            this.DownloadButton.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.DownloadButton.FlatAppearance.BorderSize = 0;
+            this.DownloadButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(143)))), ((int)(((byte)(219)))));
+            this.DownloadButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(114)))), ((int)(((byte)(181)))));
+            this.DownloadButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DownloadButton.Font = new System.Drawing.Font("Calibri", 10F, System.Drawing.FontStyle.Bold);
+            this.DownloadButton.ForeColor = System.Drawing.Color.White;
+            this.DownloadButton.Location = new System.Drawing.Point(0, 418);
+            this.DownloadButton.Margin = new System.Windows.Forms.Padding(4);
+            this.DownloadButton.Name = "DownloadButton";
+            this.DownloadButton.Size = new System.Drawing.Size(172, 39);
+            this.DownloadButton.TabIndex = 11;
+            this.DownloadButton.Text = "Download Folder";
+            this.DownloadButton.UseVisualStyleBackColor = true;
+            this.DownloadButton.Click += new System.EventHandler(this.DownloadLabel_Click);
             // 
             // SendButton
             // 
@@ -392,6 +413,10 @@ namespace FileTransfer.Interface
             this.ResumeLayout(false);
 
         }
+
+        private System.Windows.Forms.Button DownloadButton;
+
+        private System.Windows.Forms.Button ReceiveButton;
 
         #endregion
         private System.Windows.Forms.Panel MenuPanel;
