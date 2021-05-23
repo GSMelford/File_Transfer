@@ -14,12 +14,10 @@ namespace FileTransfer.Network
     internal static class NetworkConnection
     {
         public delegate void NetworkConnectionHandler(string message);
-        public delegate void DownloadOrLoadHandler(long max, long value);
         public delegate void DownloadOrLoadStatisticsHandler(NetworkConnectionArgs e);
         public static event DownloadOrLoadStatisticsHandler DownloadOrLoadStatistics;
         public static event NetworkConnectionHandler Notify;
         public static event NetworkConnectionHandler ReceiveNotify;
-        public static event DownloadOrLoadHandler DownloadOrLoad;
 
         private static string _ipServer;
         private static int _port;
@@ -54,9 +52,6 @@ namespace FileTransfer.Network
                 _client.ReceiveBufferSize = 1000000;
                 _client.SendBufferSize = 1000000;
                 
-                Task receiveFiles = new Task(ReceiveFiles);
-                receiveFiles.Start();
-
                 Notify?.Invoke("The client connects.");
                 return true;
             }
@@ -101,84 +96,98 @@ namespace FileTransfer.Network
             _stream?.Close();
         }
         
-        private static void ReceiveFiles()
+        public static bool ReceiveFiles()
         {
             Stopwatch watch = new Stopwatch();
-            while (true)
+            try
             {
-                try
+                //Передаем информацию о файле, который сейчас будет передавать
+                byte[] buffer = new byte[4];
+                _stream.Read(buffer, 0, buffer.Length);
+
+                //Запускаем счет времени
+                watch.Start();
+                //----------------------
+
+                buffer = new byte[BitConverter.ToInt32(buffer, 0)];
+                _stream.Read(buffer, 0, buffer.Length);
+                FileInfo fileInfo = (FileInfo)ByteArrayToObject(buffer);
+                Notify?.Invoke($"Waiting for file: {fileInfo.Name}. Size: {fileInfo.Length}.");
+                ReceiveNotify?.Invoke(fileInfo.Name);
+
+                //Запускаем счета скорости
+                long speed = 0;
+                long byteLoad = 0;
+                new Task(()=> { Speedometer(fileInfo.Length, ref speed, ref byteLoad); }).Start();
+
+                //Переименовывает файлы, если такие уже существовали
+                fileInfo.Name = FileHandler.RenameExistsFile(fileInfo.Name, fileInfo.Extension);
+
+                //Получаем файл
+                long bufferSize;
+                int updateTick = 1;
+                int checkConnect = 0;
+                FileHandler.FileStream = new FileStream($@"{FileHandler.DownloadPath}\{fileInfo.Name}", FileMode.Append);
+                for (long i = 0; i < fileInfo.Length; i += bufferSize)
                 {
-                    //Передаем информацию о файле, который сейчас будет передавать
-                    byte[] buffer = new byte[4];
-                    _stream.Read(buffer, 0, buffer.Length);
-
-                    //Запускаем счет времени
-                    watch.Start();
-                    //----------------------
-
-                    buffer = new byte[BitConverter.ToInt32(buffer, 0)];
-                    _stream.Read(buffer, 0, buffer.Length);
-                    FileInfo fileInfo = (FileInfo)ByteArrayToObject(buffer);
-                    Notify?.Invoke($"Waiting for file: {fileInfo.Name}. Size: {fileInfo.Length}.");
-                    ReceiveNotify?.Invoke(fileInfo.Name);
-
-                    //Запускаем счета скорости
-                    long speed = 0;
-                    long byteLoad = 0;
-                    new Task(()=> { Speedometer(fileInfo.Length, ref speed, ref byteLoad); }).Start();
-
-                    //Переименовывает файлы, если такие уже существовали
-                    fileInfo.Name = FileHandler.RenameExistsFile(fileInfo.Name, fileInfo.Extension);
-
-                    //Получаем файл
-                    long bufferSize;
-                    int updateTick = 1;
-                    FileHandler.FileStream = new FileStream($@"{FileHandler.DownloadPath}\{fileInfo.Name}", FileMode.Append);
-                    for (long i = 0; i < fileInfo.Length; i += bufferSize)
+                    if (_client.Available == 0)
                     {
-                        bufferSize = _client.Available;
-
-                        if (fileInfo.Length - i - bufferSize < 0)
-                            bufferSize = fileInfo.Length - i;
-                        else
-                            buffer = new byte[bufferSize];
-
-                        if (bufferSize != 0)
-                        {
-                            _stream.Read(buffer, 0, buffer.Length);
-                            FileHandler.WriteFile(buffer, fileInfo.Name);
-                        }
-
-                        byteLoad += bufferSize;
-
-                        DownloadOrLoad?.Invoke(fileInfo.Length, byteLoad);
-
-                        if (watch.Elapsed.Seconds >= updateTick)
-                        {
-                            updateTick++;
-                            DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
-                                fileInfo.Length, speed, byteLoad, watch.Elapsed));
-                        }
+                        Notify?.Invoke(checkConnect.ToString());
+                        checkConnect++;
+                    }
+                    else
+                    {
+                        checkConnect = 0;
                     }
 
-                    DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
-                        fileInfo.Length, speed, byteLoad, watch.Elapsed));
+                    if (checkConnect == 50)
+                    {
+                        return false;
+                    }
                     
-                    //Закрываем потоки чтения файла 
-                    FileHandler.FileStream.Close();
-                    FileHandler.FileStream.Dispose();
+                    bufferSize = _client.Available;
 
-                    //Останавливаем секундомер и выводим результат
-                    watch.Reset();
-                    Notify?.Invoke($"Received file: {fileInfo.Name}.");
+                    if (fileInfo.Length - i - bufferSize < 0)
+                        bufferSize = fileInfo.Length - i;
+                    else
+                        buffer = new byte[bufferSize];
+
+                    if (bufferSize != 0)
+                    {
+                        _stream.Read(buffer, 0, buffer.Length);
+                        FileHandler.WriteFile(buffer, fileInfo.Name);
+                    }
+
+                    byteLoad += bufferSize;
+
+                    if (watch.Elapsed.Seconds >= updateTick)
+                    {
+                        updateTick++;
+                        DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
+                            fileInfo.Length, speed, byteLoad, watch.Elapsed));
+                    }
+                }
+
+                DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
+                    fileInfo.Length, speed, byteLoad, watch.Elapsed));
                     
-                }
-                catch (Exception e)
-                {
-                    Notify?.Invoke($"Error retrieving file.");
-                    Notify?.Invoke($"{e.Message}");
-                }
+                //Закрываем потоки чтения файла 
+                FileHandler.FileStream.Close();
+                FileHandler.FileStream.Dispose();
+
+                //Останавливаем секундомер и выводим результат
+                watch.Reset();
+                Notify?.Invoke($"Received file: {fileInfo.Name}.");
+                    
             }
+            catch (Exception e)
+            {
+                Notify?.Invoke($"Error retrieving file.");
+                Notify?.Invoke($"{e.Message}");
+                return false;
+            }
+
+            return true;
         }
         
         public static bool SendFiles(string path)
@@ -226,7 +235,6 @@ namespace FileTransfer.Network
                     _stream.Write(buffer, 0, buffer.Length);
                     byteLoad += bufferSize;
 
-                    DownloadOrLoad?.Invoke(fileInfo.Length, byteLoad);
                     DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name,
                             fileInfo.Length, speed, byteLoad, watch.Elapsed));
                 }

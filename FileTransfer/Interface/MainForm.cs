@@ -17,10 +17,6 @@ namespace FileTransfer.Interface
         private bool _isServer;
         
         private bool _showLog = true;
-
-        private bool _canReceive = true;
-
-        private int _port;
         
         private readonly TableControl _tableControl;
 
@@ -118,20 +114,21 @@ namespace FileTransfer.Interface
                 HostButton.Enabled = hostButton;
                 ClientButton.Enabled = clientButton;
                 DisconnectButton.Enabled = disconnectButton;
-                ReceiveButton.Enabled = receiveButton;
             }));
         }
         
         private async void StartServerButton_Click(object sender, EventArgs e)
         {
             SetButtonsEnabled(false, false, false,false);
-            MainPanel.Controls["serverButton"].Enabled = false;
+            if (MainPanel.Controls["serverButton"] != null)
+            {
+                MainPanel.Controls["serverButton"].Enabled = false;
+            }
 
             await Task.Run(() =>
             {
                 if (!int.TryParse(MainPanel.Controls["portBox"].Text, out int port))
                 {
-                    _port = port;
                     _showLog = true;
                     ShowEventsButton_Click(null, null);
                     Notify?.Invoke("Invalid value in the port field.");
@@ -149,16 +146,26 @@ namespace FileTransfer.Interface
                     return;
                 }
 
+                new Task(ReceiveFiles).Start();
                 CreateTables();
                 SetButtonsEnabled(false, false, true,true);
                 Invoke((Action)(() => { WindowLabel.Text = "Received files:"; }));
             });
         }
-
-        private void ReceiveButton_Click(object sender, EventArgs e)
-        {
-        }
         
+        private void ReceiveFiles()
+        {
+            while (true)
+            {
+                if (!NetworkConnection.ReceiveFiles())
+                {
+                    NetworkConnection.Disconnect();
+                    MessageBox.Show("We have lost the connection with the client. Restart the program and try again.",
+                        "Oops...");
+                    Environment.Exit(0);
+                }
+            }
+        }
         
         private void ConnectButton_Click(object sender, EventArgs e)
         {
@@ -314,6 +321,5 @@ namespace FileTransfer.Interface
             }
         }
 
-        
     }
 }
