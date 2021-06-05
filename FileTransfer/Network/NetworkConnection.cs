@@ -144,7 +144,7 @@ namespace FileTransfer.Network
 
                     byteLoad += bufferSize;
 
-                    if (watch.Elapsed.Seconds >= updateTick)
+                    if (watch.Elapsed.TotalSeconds >= updateTick)
                     {
                         updateTick++;
                         DownloadOrLoadStatistics?.Invoke(new NetworkConnectionArgs(fileInfo.Name, 
