@@ -8,9 +8,7 @@ namespace FileTransfer.FileWorker
         public static string DownloadPath { get; set; }
 
         public static FileStream FileStream;
-        
-        //private static List<string> FilePaths = new List<string>();
-        
+
         private static readonly Dictionary<string, string> FilePaths = new Dictionary<string, string>();
         
         public static void AddFilePath(string name,string path)
@@ -20,7 +18,7 @@ namespace FileTransfer.FileWorker
         
         public static Dictionary<string, string> GetFilePaths() => FilePaths;
         
-        public static void WriteFile(byte[] file, string fileName)
+        public static void WriteFile(byte[] file)
         {
             FileStream.Write(file, 0, file.Length);
         }

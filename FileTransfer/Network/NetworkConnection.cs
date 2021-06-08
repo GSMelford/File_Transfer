@@ -139,7 +139,7 @@ namespace FileTransfer.Network
                     if (bufferSize != 0)
                     {
                         _stream.Read(buffer, 0, buffer.Length);
-                        FileHandler.WriteFile(buffer, fileInfo.Name);
+                        FileHandler.WriteFile(buffer);
                     }
 
                     byteLoad += bufferSize;
